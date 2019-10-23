@@ -35,7 +35,7 @@ void Termostat::setTermoMode(bool c, short t)                                   
         arduino->coolerOff();
     arduino->heating(t);                                                                // Вызывает установку температуры обработчиком команд в другом потоке
 }
-void Termostat::setNewMode()                                                            // Обновляет текущий режим работы. Функция должна вызываться регулярно по таймеру для
+void Termostat::update()                                                                // Обновляет текущий режим работы. Функция должна вызываться регулярно по таймеру для
 {                                                                                       // осуществления замера текущих температур и коррекции работы нагревателя и вентилятора
     qDebug() << "New termal mode set!";
     setTermoMode(cooler, termal);

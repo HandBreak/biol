@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(oExperiments, SIGNAL(calibrate(Task*)), calibratorWidget, SLOT(calibrate(Task*)));    // Передаёт задание калибратору перед началом опыта
 
     // Обеспечение обмена сообщениями с демоном термостата и его циклический вызов по таймеру
-    QObject::connect(&tsTimer, SIGNAL(timeout()), termostat, SLOT(setNewMode()));
+    QObject::connect(&tsTimer, SIGNAL(timeout()), termostat, SLOT(update()));
     QObject::connect(oExperiments, SIGNAL(setTermostat(short)), termostat, SLOT(setTemperature(short)));
     QObject::connect(taskExecutor, SIGNAL(setTermostat(short)), termostat, SLOT(setTemperature(short)));
     QObject::connect(termostat, SIGNAL(heated()), &oExperiments->qmsg, SLOT(close()));
