@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = biol
 TEMPLATE = app
 
-include($${_PRO_FILE_PWD_}/qjson.pri)
+###include($${_PRO_FILE_PWD_}/qjson.pri)
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -27,10 +27,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    settings.cpp \
     arduino.cpp \
     task.cpp \
-    experiments.cpp \
     capturethread.cpp \
     videowidget.cpp \
     networksettings.cpp \
@@ -43,10 +41,8 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h \
-    settings.h \
     arduino.h \
     task.h \
-    experiments.h \
     capturethread.h \
     videowidget.h \
     networksettings.h \
@@ -61,8 +57,6 @@ HEADERS += \
 
 FORMS += \
         mainwindow.ui \
-    settings.ui \
-    experiments.ui \
     networksettings.ui \
     calibratorwidget.ui
 
@@ -84,5 +78,5 @@ target.path = /opt
 INSTALLS += target
 export (INSTALLS)
 
-RESOURCES += \
-    images.qrc
+###RESOURCES += \
+###    images.qrc
