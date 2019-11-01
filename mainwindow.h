@@ -25,7 +25,6 @@
 #include <QTimer>
 #include <QDir>
 
-#include <experiments.h>
 #include <videowidget.h>
 #include <capturethread.h>
 #include <networksettings.h>
