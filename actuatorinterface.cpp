@@ -4,9 +4,11 @@
 ActuatorInterface::ActuatorInterface(QObject *parent) : QObject(parent)
 {
     QProcess *p = new QProcess();
-    p->start("stty -F /dev/ttyS1 -brkint -icrnl -imaxbel \
-             -onlcr -icanon -echo speed 115200 \
-             line 0 min 0 time 10");
+    QString cmd("stty -F " + com + " -brkint -icrnl -imaxbel \
+                -onlcr -icanon -echo speed 115200 \
+                line 0 min 0 time 10");
+    qDebug()<<cmd;
+    p->start(cmd);
     p->waitForFinished();                                                               // Настройка порта осуществляется вызовом системной команды stty
     qDebug() << p->readAll();
 
