@@ -8,7 +8,6 @@ enum {STATUS = 4};
 
 typedef unsigned short int USHORT;   // На память о возможности сокращений :)
 typedef short int SHORT;             //
-char *a; // test
 
 // -------------- Константы определяюшие параметры контроллера приводов (ActuatorInterface) ------------------------->!
 /* Для настойки порта ипользовать stty -F /dev/ttyS1 с параметрами:
