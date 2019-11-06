@@ -33,6 +33,7 @@
 #include <cloud.h>
 #include <arduino.h>
 #include <termostat.h>
+#include <experiments.h>
 #include <taskexecutor.h>
 #include <actuatorinterface.h>
 #include <actuatorconstants.h>
