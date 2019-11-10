@@ -16,7 +16,8 @@
 #include <QProcess>
 #include <QProgressBar>
 #include <QProgressDialog>
-#include <QMainWindow>
+//#include <QMainWindow>
+#include <QStackedWidget>
 #include <QTextStream>
 #include <QMessageBox>
 #include <QEventLoop>
@@ -43,7 +44,7 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public QStackedWidget
 {
     Q_OBJECT
 
@@ -96,6 +97,9 @@ public slots:
     void videoControlMode(bool);                                                        // Включает / отключает отображение виджета видеоконтроля в процессе эксперимента
     void homed(bool);                                                                   // По завершению 'Homing' запускает инициализацию Видеокамеры и Сетевых интерфейсов. (параллельный процесс может вызывать сбои)
     void errard(int);                                                                   // Получает и обрабатывает ошибки от объекта управления контроллером исп.устройств (Arduino)
+
+    void onMainClicked();                                                               // Вызывает основное меню
+    void onSettingsClicked();                                                           // Вызывает меню настроек
 
 signals:
     void doHoming();                                                                    // Вызывает 'Homing' при запуске программного обеспечения

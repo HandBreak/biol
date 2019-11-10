@@ -4,7 +4,7 @@
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
+    QStackedWidget(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -48,6 +48,8 @@ MainWindow::MainWindow(QWidget *parent) :
     tsTimer.setSingleShot(false);
     tsTimer.setInterval(500);                                                           // Интервал обновления состояния термостата. (0,5сек. Оптимизировать!!!)
 
+    setCurrentIndex(0);
+
     // Приём сообщений от объекта управления исполнительными механизмами
     QObject::connect(arduino, SIGNAL(homed(bool)), this, SLOT(homed(bool)));
     QObject::connect(arduino, SIGNAL(executeError(int)), this, SLOT(errard(int)));
@@ -69,6 +71,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->pbExpMenu, SIGNAL(clicked()),this, SLOT(onExperimentsClicked()));
     QObject::connect(ui->pbNetSettings, SIGNAL(clicked(bool)), this, SLOT(onNetSettingsClicked()));
     QObject::connect(ui->pbCamera, SIGNAL(clicked(bool)), calibratorWidget, SLOT(showCalibratorCtl()));
+    // Вызов страницы настроек из меню основного интерфейса.
+    QObject::connect(ui->pbMainWindow, SIGNAL(clicked()), SLOT(onMainClicked()));
+    QObject::connect(ui->pbSettings, SIGNAL(clicked()), SLOT(onSettingsClicked()));
 
     // Отработка сигналов возврата в основное меню из модулей. Убрать после объединения !!!
     QObject::connect(oExperiments, SIGNAL(toMainReturn()), this, SLOT(showFullScreen()));
@@ -620,6 +625,16 @@ void MainWindow::getNotSendList(QStringList nsFilelist)                         
         sendCloudOk = true;
         pdlg->reset();
     }
+}
+
+void MainWindow::onMainClicked()
+{
+    setCurrentIndex(0);
+}
+
+void MainWindow::onSettingsClicked()
+{
+    setCurrentIndex(2);
 }
 
 void MainWindow::pauseClicked()                                                         // Слот обработки нажатия паузы в опыте - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
