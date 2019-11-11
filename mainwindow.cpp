@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->addWidget(&netSettings);
+//    this->addWidget(&calibratorWidget);
 
     QProcess *p = new QProcess();
     p->start("cat /etc/MAC");                                                           // Получаем MAC-адрес Ethernet-контроллера. Последние 2 байта используем в качестве префикса имен файлов
@@ -34,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent) :
     webdavThread = new QThread();
     webdav->moveToThread(webdavThread);
     //
-    netSettings = new NetworkSettings;                                                  // Перенести виджет в страницу MainWindow Widget !!!
     videoWidget = new VideoWidget();
     calibratorWidget = new CalibratorWidget(0, videoWidget);                            // Перенести виджет в страницу MainWindow Widget !!!
     videoWidget->setMinimumSize(240, 240);                                              // Установить минимальный размер виджета
@@ -77,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Отработка сигналов возврата в основное меню из модулей. Убрать после объединения !!!
     QObject::connect(oExperiments, SIGNAL(toMainReturn()), this, SLOT(showFullScreen()));
-    QObject::connect(netSettings, SIGNAL(toMainReturn()), this, SLOT(showFullScreen()));
+    QObject::connect(&netSettings, SIGNAL(toMainReturn()), this, SLOT(onMainClicked()));
 
     // Отработка сигналов от модуля управления экспериментом
     QObject::connect(oExperiments, SIGNAL(letsStart(Task*)), taskExecutor, SLOT(startExperiment(Task*)));  // Передаёт исполнителю Задание
@@ -160,7 +161,6 @@ MainWindow::~MainWindow()
     arduinoThread->wait();
     delete arduinoThread;
 
-    delete netSettings;
     delete ui;
 
     // Удаляем WebDAV sender
@@ -644,9 +644,8 @@ void MainWindow::pauseClicked()                                                 
 
 void MainWindow::onNetSettingsClicked()                                                 // Слот вызова сетевых настроек - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
 {
-    netSettings->showFullScreen();
-    netSettings->setCurrentParameters();
-    this->hide();
+    setCurrentIndex(4);
+    netSettings.setCurrentParameters();
 }
 
 void MainWindow::onExperimentsClicked()                                                 // Слот вызова параметров опыта - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
@@ -671,7 +670,7 @@ void MainWindow::homed(bool success)                                            
         if (!videoCapture->isRunning())
         {
             videoCapture->start();                                                      // ДОБАВИТЬ ЗАДЕРЖКУ К ЗАПУСКУ - СОЗДАЕТ ПРОБЛЕМЫ ПОТОКУ ВЫВОДА В TTYS1!!!!
-            netSettings->initNetwork();                                                 // СДЕЛАТЬ ОТДЕЛЬНУЮ ПРОВЕРКУ РАБОТЫ И ЗАПУСКА СЕТИ ПОСЛЕ ХОМИНГА!!!
+            netSettings.initNetwork();                                                 // СДЕЛАТЬ ОТДЕЛЬНУЮ ПРОВЕРКУ РАБОТЫ И ЗАПУСКА СЕТИ ПОСЛЕ ХОМИНГА!!!
         }
     }
     else

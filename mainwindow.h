@@ -60,7 +60,7 @@ private:
     TaskExecutor *taskExecutor;                                                         // Указатель на объект класса исполнителя задания эксперимента (отдельный поток!)
     Termostat *termostat;                                                               // Указатель на объект класса термостата (отдельный поток!)
     Experiments *oExperiments;                                                          // Указатель на объект класса формирования задания для эксперимента. (ПЕРЕНЕСТИ в MainWindow и создать интерфейс!!!)
-    NetworkSettings *netSettings = NULL;                                                // Указатель на объект класса конфигуратора сети. (ПЕРЕНЕСТИ в MainWindow интерфейс!!!)
+    NetworkSettings netSettings;                                                        // Объект класса конфигуратора сети. (!!!)
     CalibratorWidget *calibratorWidget;                                                 // Указатель на объект класса виджета калибратора. (ПЕРЕНЕСТИ в MainWindow интерфейс!!!)
     QProgressDialog *pdlg;                                                              // Указатель на объект командной строки для вызова функций операционной системы
     CaptureThread *videoCapture;                                                        // Указатель на объект видеозахвата
