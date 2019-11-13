@@ -40,7 +40,7 @@ class CalibratorWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit CalibratorWidget(QWidget *parent = 0, VideoWidget *video = 0);
+    explicit CalibratorWidget(VideoWidget &, QWidget *parent = 0);
     ~CalibratorWidget();
 
 private:

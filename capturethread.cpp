@@ -1,14 +1,14 @@
 #include "capturethread.h"
 #include <QDebug>
 
-CaptureThread::CaptureThread(QWidget *parent) :
+CaptureThread::CaptureThread(VideoWidget *parent) :
     QThread(parent)
 {
 // Конструктор передаёт родителю  какой-то указатель ????
 // объявляет переменную capture как false
 // и устанавливает переменную файлового дескриптора в -1 (ошибка открытия файла)
 
-    this->parent=(VideoWidget*)parent;
+    this->videovidget=(VideoWidget*)parent;
     capture=false;
     ctrenum=false;
     takeshot=false;
@@ -169,13 +169,13 @@ fd = -1;
 
 // Собственно загрузка данных в объект производится строкой ниже (в проверке условия), с помощью Qt метода loadFromData, который принимает по ссылке данные типа uchar data (массив байт), в данном случае испольузет адрес из 'asil', длиной '.fmt.pix.sizeimage+qstrlen(header)' (размер изображения + текстового заголовка) и форматом 'PPM' (если PPM=0, пытается сам разобрать формат по заголовку внутри)
         if(qq.loadFromData(asil,fmt.fmt.pix.sizeimage+qstrlen(header),"PPM")){
-            if(parent->isVisible()){                                                    // Если предок (виджет видеоокна) имеет сатус "Видимый (isVisible),
+            if(videovidget->isVisible()){                                                    // Если предок (виджет видеоокна) имеет сатус "Видимый (isVisible),
 //                QImage q1(qq);                                                        // Объявляем объект 'q1' типа QImage, который инициализируем объектом 'qq'. То есть создаём его "неглубокую" копию
-//                parent->img=q1;                                                       // Свойству 'img' предка (видеовиджета) присваиваем содержимое 'q1' (копируем в него данный кадр)
-//                parent->img=qq;                                                       // Свойству 'img' предка (видеовиджета) присваиваем содержимое 'qq' (копируем в него данный кадр в полном размере)
-                parent->img=qq.copy((fmt.fmt.pix.width - fmt.fmt.pix.height)/2,\
+//                videovidget->img=q1;                                                       // Свойству 'img' предка (видеовиджета) присваиваем содержимое 'q1' (копируем в него данный кадр)
+//                videovidget->img=qq;                                                       // Свойству 'img' предка (видеовиджета) присваиваем содержимое 'qq' (копируем в него данный кадр в полном размере)
+                videovidget->img=qq.copy((fmt.fmt.pix.width - fmt.fmt.pix.height)/2,\
                                      0, fmt.fmt.pix.height, fmt.fmt.pix.height);        // Копируем в видеовиджет только центр кадра (квадрат по меньшей стороне)
-                parent->update();                                                       // Вызываем у предка (видеовиджета) метод 'update', который перерисовывает изображение
+                videovidget->update();                                                       // Вызываем у предка (видеовиджета) метод 'update', который перерисовывает изображение
               //this->msleep(50);                                                       // Ожидаем 50 миллисекунд (закомментировано)
             }
             if (takeshot)                                                               // Если есть требование сохранить снимок,

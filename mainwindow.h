@@ -51,7 +51,7 @@ class MainWindow : public QStackedWidget
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    Task *task;                                                                         // Указатель на задание для эксперимента
+    Task task;                                                                          // Задание для эксперимента.  Предусмотреть сохранение в виде профиля
 
 private:
     Ui::MainWindow *ui;
@@ -64,7 +64,7 @@ private:
     CalibratorWidget *calibratorWidget;                                                 // Указатель на объект класса виджета калибратора. (ПЕРЕНЕСТИ в MainWindow интерфейс!!!)
     QProgressDialog *pdlg;                                                              // Указатель на объект командной строки для вызова функций операционной системы
     CaptureThread *videoCapture;                                                        // Указатель на объект видеозахвата
-    VideoWidget *videoWidget;                                                           // Указатель на видеовиджет
+    VideoWidget videoWidget;                                                            // Видеовиджет
     QThread *taskExecutorThread;                                                        // Указатель на поток для исполнителя задания эксперимента
     QThread *captureThread;                                                             // Указатель на поток объекта видеозахвата
     QThread *webdavThread;                                                              // Указатель на поток загрузки в NextCloud

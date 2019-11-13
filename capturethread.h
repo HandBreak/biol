@@ -52,13 +52,13 @@
 class CaptureThread : public QThread                                                    // Создаём класс, наследник QThread (поток Qt)
 {
 public:
-    explicit CaptureThread(QWidget *parent = 0);
+    explicit CaptureThread(VideoWidget *parent = 0);
     ~CaptureThread();
     bool capture;                                                                       // Флаг включенного захвата видеопотока
     bool ctrenum;                                                                       // Флаг завершения перечисления контролов открытого устройства
     bool takeshot;                                                                      // Флаг - требование сделать снимок
 
-    VideoWidget *parent;
+    VideoWidget                     *videovidget;
     QImage                          cs;                                                 // Объект захвата кадра для сохранения в файл
     struct v4l2_format              fmt;                                                // Буфер, содержащий структуру описывающую видеоформат
     struct v4l2_buffer              buf;                                                // Буфер видеоданных

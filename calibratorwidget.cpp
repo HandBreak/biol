@@ -3,7 +3,7 @@
 
 #include <QDebug>
 
-CalibratorWidget::CalibratorWidget(QWidget *parent, VideoWidget *video) :               // Инициализируется указателем на виджет видеозахвата
+CalibratorWidget::CalibratorWidget(VideoWidget &video, QWidget *parent) :               // Инициализируется указателем на виджет видеозахвата
     QWidget(parent),
     ui(new Ui::CalibratorWidget)
 {
@@ -99,7 +99,7 @@ CalibratorWidget::CalibratorWidget(QWidget *parent, VideoWidget *video) :       
 
     widget->setLayout(gridLayout);                                                      // Установить слой с элементами управления на виджет
     ui->videoLayout->addLayout(stackedLayout);                                          // Добавить стек слоёв в область видеовиджета
-    stackedLayout->addWidget(video);                                                    // Добавить в стек слой видеопотока
+    stackedLayout->addWidget(&video);                                                   // Добавить в стек слой видеопотока
     stackedLayout->addWidget(widget);                                                   // Добавить в стек слой с элементами управления
     stackedLayout->setStackingMode(QStackedLayout::StackAll);                           // Выбрать режим объединения всех слоёв
     stackedLayout->setCurrentIndex(1);                                                  // Выбрать активный слой с элементами управления

@@ -8,8 +8,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->addWidget(&netSettings);
-//    this->addWidget(&calibratorWidget);
 
     QProcess *p = new QProcess();
     p->start("cat /etc/MAC");                                                           // Получаем MAC-адрес Ethernet-контроллера. Последние 2 байта используем в качестве префикса имен файлов
@@ -36,15 +34,16 @@ MainWindow::MainWindow(QWidget *parent) :
     webdavThread = new QThread();
     webdav->moveToThread(webdavThread);
     //
-    videoWidget = new VideoWidget();
-    calibratorWidget = new CalibratorWidget(0, videoWidget);                            // Перенести виджет в страницу MainWindow Widget !!!
-    videoWidget->setMinimumSize(240, 240);                                              // Установить минимальный размер виджета
-    videoCapture = new CaptureThread(videoWidget);
+    calibratorWidget = new CalibratorWidget(videoWidget);                               // Перенести виджет в страницу MainWindow Widget !!!
+    videoWidget.setMinimumSize(240, 240);                                               // Установить минимальный размер виджета
+    videoCapture = new CaptureThread(&videoWidget);
     videoCapture->setDevice("/dev/video0");                                             // Имя устройства захвата. Перенести в конфигуратор и реализовать возможность выбора из списка !!!
     videoCapture->capture = true;                                                       // Завершив инициализацию устройства, разрешаем цикл захвата.
 
-    task = new Task();                                                                  // Указатель на объект задания. Перенести в стек ? !!!. Предусмотреть сохранение в виде профиля
-    oExperiments = new Experiments(0, task);                                            // Инициализируем объект настройки опыта
+    oExperiments = new Experiments(0, &task);                                           // Инициализируем объект настройки опыта
+
+    this->addWidget(&netSettings);
+    this->addWidget(oExperiments);
 
     tsTimer.setSingleShot(false);
     tsTimer.setInterval(500);                                                           // Интервал обновления состояния термостата. (0,5сек. Оптимизировать!!!)
@@ -77,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->pbSettings, SIGNAL(clicked()), SLOT(onSettingsClicked()));
 
     // Отработка сигналов возврата в основное меню из модулей. Убрать после объединения !!!
-    QObject::connect(oExperiments, SIGNAL(toMainReturn()), this, SLOT(showFullScreen()));
+    QObject::connect(oExperiments, SIGNAL(toMainReturn()), this, SLOT(onMainClicked()));
     QObject::connect(&netSettings, SIGNAL(toMainReturn()), this, SLOT(onMainClicked()));
 
     // Отработка сигналов от модуля управления экспериментом
@@ -141,10 +140,8 @@ MainWindow::~MainWindow()
     videoCapture->wait();
 
     delete videoCapture;
-    delete videoWidget;
     delete calibratorWidget;
 
-    delete task;
     delete oExperiments;
     delete taskExecutor;
     taskExecutorThread->quit();
@@ -195,7 +192,7 @@ void MainWindow::onShotSignal(QStringList tagInfo)                              
         if (!videoCapture->cs.save(fullname, "png", 100))                               // БЕЗ СЖАТИЯ, ДОСТАТОЧНО МЕДЛЕННО !!! (85 - со сжатием, но очень медленно)
         {
             qDebug() << "Shot not saved, write error!";
-            task->continueFlag = false;                                                 // В случае ошибки записи сбросить флаг, признак продолжения опыта
+            task.continueFlag = false;                                                 // В случае ошибки записи сбросить флаг, признак продолжения опыта
         }
     }
     else
@@ -205,13 +202,13 @@ void MainWindow::onShotSignal(QStringList tagInfo)                              
         if (!videoCapture->cs.save(fullname, "bmp"))                                    // БЕЗ СЖАТИЯ И ТЭГОВ, БЫСТРЫЙ МЕТОД
         {
             qDebug() << "Shot not saved, write error!";
-            task->continueFlag = false;                                                 // В случае ошибки записи сбросить флаг, признак продолжения опыта
+            task.continueFlag = false;                                                 // В случае ошибки записи сбросить флаг, признак продолжения опыта
         }
         QFile file(fullname);
         if (!file.open(QIODevice::Append | QIODevice::Text))
         {
             qDebug() << "Shot file open error!";
-            task->continueFlag = false;                                                 // В случае ошибки записи сбросить флаг, признак продолжения опыта
+            task.continueFlag = false;                                                 // В случае ошибки записи сбросить флаг, признак продолжения опыта
         }
         QTextStream stream(&file);                                                      // Текстовый поток для дозаписи в конец изображения тэгов с параметрами съемки
         QString line("tEXt");
@@ -229,11 +226,11 @@ void MainWindow::onShotSignal(QStringList tagInfo)                              
         if (stream.status() != QTextStream::Ok)
         {
             qDebug() << "Shot metadata write error!";
-            task->continueFlag = false;                                                 // В случае ошибки записи метаданных сбросить флаг, признак продолжения опыта
+            task.continueFlag = false;                                                 // В случае ошибки записи метаданных сбросить флаг, признак продолжения опыта
         }
         else
             /* Сброс файла в "облако" WebDAV, если в задание предполагает передачу в NextCloud */
-            if (task->sendToCloud)
+            if (task.sendToCloud)
             {
                 sendcounter++;                                                          // Счетчик отправленных файлов
                 emit sendToCloud(fullname);
@@ -254,7 +251,7 @@ void MainWindow::onExperimentInProgress(bool process)                           
     {
         /* Выполняется в начале эксперимента. Инициализация соединений, подготовка хранилища */
         sendcounter = 0;                                                                // Обнулим счетчик переданных
-        if (task->sendToCloud)
+        if (task.sendToCloud)
             emit cloudConnInit(true);                                                   // Откроем соединение, если включена передача в NextClowd
         dsize = 0;                                                                      // Обнулим значение счетчика необходимого места на съемном носителе
         shotcounter = 0;
@@ -266,7 +263,7 @@ void MainWindow::onExperimentInProgress(bool process)                           
             if (!newdir.mkdir(tempfolder))
             {
                 qDebug() << "Create temporary folder error!";
-                task->continueFlag = false;                                             // В случае ошибки создания подкаталога сбросить флаг, признак продолжения опыта
+                task.continueFlag = false;                                             // В случае ошибки создания подкаталога сбросить флаг, признак продолжения опыта
                 return;
             }
         }
@@ -294,7 +291,7 @@ void MainWindow::onExperimentInProgress(bool process)                           
         if(!filelist.open(QIODevice::Append | QIODevice::Text))                         // Создаем новый файл описания снимков с открытием в режиме дозаписи
         {
             qDebug() << "Error create description file!";
-            task->continueFlag = false;                                                 // В случае ошибки создания файла-дескриптора сбросить флаг, признак продолжения опыта
+            task.continueFlag = false;                                                 // В случае ошибки создания файла-дескриптора сбросить флаг, признак продолжения опыта
         }
         long kbytes = taskExecutor->holes *                                             // Умножаем расчетное число снимков на их объем
                (videoCapture->yres *                                                    // Вычисляемый как квадрат меньшей стороны
@@ -306,11 +303,11 @@ void MainWindow::onExperimentInProgress(bool process)                           
             QMessageBox::warning(0,
                                  tr("Внимание!"),
                                  tr("Может быть недостаточно места на диске!"));
-            task->continueFlag = false;                                                 // В случае недостатка места на внутреннем хранилище сбосить флаг, признак продолжения опыта
+            task.continueFlag = false;                                                 // В случае недостатка места на внутреннем хранилище сбосить флаг, признак продолжения опыта
             return;
         }
         QTextStream record(&filelist);
-        record << task->methodCode << "\r\n";                                           // Записать название метода в заголовок файла-дескриптора из Задания.
+        record << task.methodCode << "\r\n";                                           // Записать название метода в заголовок файла-дескриптора из Задания.
     }
     else
     {
@@ -322,12 +319,12 @@ void MainWindow::onExperimentInProgress(bool process)                           
         if (record.status() != QTextStream::Ok)
         {
             qDebug() << "Description list write error!";
-            task->continueFlag = false;                                                 // В случае ошибки создания закрытия файла-дескриптора сбросить флаг, признак продолжения опыта
+            task.continueFlag = false;                                                 // В случае ошибки создания закрытия файла-дескриптора сбросить флаг, признак продолжения опыта
         }
         if (!QFile::rename(path + QString("description.tmp"), path + QString("description.id")))
             qDebug() << "Error rename description file!";
 
-        if (task->sendToCloud)
+        if (task.sendToCloud)
         {
             /* Отправка файла-описания в WebDAV, если было включено в задании на эксперимент */
             sendcounter++;                                                              // Счетчик отправляемых в NextCloud файлов
@@ -346,7 +343,7 @@ void MainWindow::onExperimentInProgress(bool process)                           
         }
 
         bool mustsave = true;                                                           // Флаг - требует обязательного сохранения на сменном носители (если не включено NextClown или возникла ошибка передачи)
-        if (task->sendToCloud)
+        if (task.sendToCloud)
             /* Ожидаем завершения передачи в WebDAV и зарываем соединение, если было включено сохранение в облако */
             mustsave = waitForSending();                                                // Если при сохранение в NextCloud возникли ошибки, сохраняем флаг "Необходимо сохранить" в true
         saveToRemovable(mustsave);                                                      // Предложить сохранение на USB-носитель. Требовать, если 'mustsave = true'
@@ -639,7 +636,7 @@ void MainWindow::onSettingsClicked()
 
 void MainWindow::pauseClicked()                                                         // Слот обработки нажатия паузы в опыте - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
 {
-    task->pauseEnabled = !task->pauseEnabled;
+    task.pauseEnabled = !task.pauseEnabled;
 }
 
 void MainWindow::onNetSettingsClicked()                                                 // Слот вызова сетевых настроек - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
@@ -650,8 +647,7 @@ void MainWindow::onNetSettingsClicked()                                         
 
 void MainWindow::onExperimentsClicked()                                                 // Слот вызова параметров опыта - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
 {
-    oExperiments->showFullScreen();                                                     // Отображаем виджет экспериментов
-    this->hide();                                                                       // Скрываем основное окно
+    setCurrentIndex(5);
 }
 
 void MainWindow::videoControlMode(bool control)                                         // Слот вызова окна видеоконтроля - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
