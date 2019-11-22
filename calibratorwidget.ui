@@ -31,8 +31,17 @@
      <height>61</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>Пауза</string>
+   </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="pbExit">
@@ -44,8 +53,17 @@
      <height>61</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string>Выход</string>
+   </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupBox">
@@ -56,6 +74,9 @@
      <width>101</width>
      <height>71</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="title">
     <string>Шаг, мм</string>
@@ -111,6 +132,9 @@
      <height>231</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <layout class="QVBoxLayout" name="videoLayout"/>
   </widget>
   <widget class="QLabel" name="lbHoleName">
@@ -121,6 +145,9 @@
      <width>35</width>
      <height>15</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string>Hole:</string>
@@ -135,6 +162,9 @@
      <height>15</height>
     </rect>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
    <property name="text">
     <string/>
    </property>
@@ -147,6 +177,9 @@
      <width>42</width>
      <height>15</height>
     </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
    </property>
    <property name="text">
     <string/>
@@ -164,20 +197,17 @@
    <property name="cursor">
     <cursorShape>BlankCursor</cursorShape>
    </property>
-   <property name="tabletTracking">
-    <bool>false</bool>
-   </property>
    <property name="focusPolicy">
     <enum>Qt::NoFocus</enum>
    </property>
-   <property name="contextMenuPolicy">
-    <enum>Qt::NoContextMenu</enum>
-   </property>
-   <property name="acceptDrops">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>Далее</string>
+   </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>
