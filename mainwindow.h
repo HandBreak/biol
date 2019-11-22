@@ -39,6 +39,7 @@
 #include <actuatorinterface.h>
 #include <actuatorconstants.h>
 
+enum {MAINMENU, INFORMATION, SETTINGS, RESEARCH, NETWORK, EXPERIMENTS};
 
 namespace Ui {
 class MainWindow;

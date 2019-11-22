@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tsTimer.setSingleShot(false);
     tsTimer.setInterval(500);                                                           // Интервал обновления состояния термостата. (0,5сек. Оптимизировать!!!)
 
-    setCurrentIndex(0);
+    setCurrentIndex(MAINMENU);
 
     // Приём сообщений от объекта управления исполнительными механизмами
     QObject::connect(arduino, SIGNAL(homed(bool)), this, SLOT(homed(bool)));
@@ -626,12 +626,12 @@ void MainWindow::getNotSendList(QStringList nsFilelist)                         
 
 void MainWindow::onMainClicked()
 {
-    setCurrentIndex(0);
+    setCurrentIndex(MAINMENU);
 }
 
 void MainWindow::onSettingsClicked()
 {
-    setCurrentIndex(2);
+    setCurrentIndex(SETTINGS);
 }
 
 void MainWindow::pauseClicked()                                                         // Слот обработки нажатия паузы в опыте - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
@@ -641,13 +641,13 @@ void MainWindow::pauseClicked()                                                 
 
 void MainWindow::onNetSettingsClicked()                                                 // Слот вызова сетевых настроек - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
 {
-    setCurrentIndex(4);
+    setCurrentIndex(NETWORK);
     netSettings.setCurrentParameters();
 }
 
 void MainWindow::onExperimentsClicked()                                                 // Слот вызова параметров опыта - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
 {
-    setCurrentIndex(5);
+    setCurrentIndex(EXPERIMENTS);
 }
 
 void MainWindow::videoControlMode(bool control)                                         // Слот вызова окна видеоконтроля - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
