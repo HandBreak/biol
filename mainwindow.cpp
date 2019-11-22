@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     webdavThread = new QThread();
     webdav->moveToThread(webdavThread);
     //
-    calibratorWidget = new CalibratorWidget(videoWidget);                               // Перенести виджет в страницу MainWindow Widget !!!
+    calibratorWidget.setVideoWidget(videoWidget);
     videoWidget.setMinimumSize(240, 240);                                               // Установить минимальный размер виджета
     videoCapture = new CaptureThread(&videoWidget);
     videoCapture->setDevice("/dev/video0");                                             // Имя устройства захвата. Перенести в конфигуратор и реализовать возможность выбора из списка !!!
@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->addWidget(&netSettings);
     this->addWidget(oExperiments);
+//    this->addWidget(&calibratorWidget);
 
     tsTimer.setSingleShot(false);
     tsTimer.setInterval(500);                                                           // Интервал обновления состояния термостата. (0,5сек. Оптимизировать!!!)
@@ -55,9 +56,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(arduino, SIGNAL(executeError(int)), this, SLOT(errard(int)));
 
     // Трансляция состояний от объекта управления исполнительными механизмами к виджету калибровки
-    QObject::connect(arduino, SIGNAL(movingInProcess(bool)), calibratorWidget, SLOT(waitMoving(bool)));
-    QObject::connect(arduino, SIGNAL(axisPosition(int,int,int)), calibratorWidget, SLOT(axisPosition(int,int,int)));
-    QObject::connect(arduino, SIGNAL(extruderTemperature(short)), calibratorWidget, SLOT(setCurrentTemp(short)));
+    QObject::connect(arduino, SIGNAL(movingInProcess(bool)), &calibratorWidget, SLOT(waitMoving(bool)));
+    QObject::connect(arduino, SIGNAL(axisPosition(int,int,int)), &calibratorWidget, SLOT(axisPosition(int,int,int)));
+    QObject::connect(arduino, SIGNAL(extruderTemperature(short)), &calibratorWidget, SLOT(setCurrentTemp(short)));
 
     // Передача команд объекту управления исполнительними механизмами (для инициализации и завершения работы)
     QObject::connect(this, SIGNAL(doHoming()), arduino, SLOT(homing()));
@@ -70,7 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->pbTable, SIGNAL(clicked()), taskExecutor, SLOT(changeTablet()));
     QObject::connect(ui->pbExpMenu, SIGNAL(clicked()),this, SLOT(onExperimentsClicked()));
     QObject::connect(ui->pbNetSettings, SIGNAL(clicked(bool)), this, SLOT(onNetSettingsClicked()));
-    QObject::connect(ui->pbCamera, SIGNAL(clicked(bool)), calibratorWidget, SLOT(showCalibratorCtl()));
+    QObject::connect(ui->pbCamera, SIGNAL(clicked(bool)), &calibratorWidget, SLOT(showCalibratorCtl()));
+
     // Вызов страницы настроек из меню основного интерфейса.
     QObject::connect(ui->pbMainWindow, SIGNAL(clicked()), SLOT(onMainClicked()));
     QObject::connect(ui->pbSettings, SIGNAL(clicked()), SLOT(onSettingsClicked()));
@@ -83,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(oExperiments, SIGNAL(letsStart(Task*)), taskExecutor, SLOT(startExperiment(Task*)));  // Передаёт исполнителю Задание
     QObject::connect(oExperiments, SIGNAL(bottomLimit(int)), arduino, SLOT(setBottomLimit(int)));          // Передаёт объекту управления ИМ допустимую нижнюю границу по Z для типа планшета
     QObject::connect(oExperiments, SIGNAL(videoControl(bool)), this, SLOT(videoControlMode(bool)));        // Позволяет включать/отключать видеоконтроль во время опыта
-    QObject::connect(oExperiments, SIGNAL(calibrate(Task*)), calibratorWidget, SLOT(calibrate(Task*)));    // Передаёт задание калибратору перед началом опыта
+    QObject::connect(oExperiments, SIGNAL(calibrate(Task*)), &calibratorWidget, SLOT(calibrate(Task*)));    // Передаёт задание калибратору перед началом опыта
 
     // Обеспечение обмена сообщениями с демоном термостата и его циклический вызов по таймеру
     QObject::connect(&tsTimer, SIGNAL(timeout()), termostat, SLOT(update()));
@@ -98,21 +100,21 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(taskExecutor, SIGNAL(takeShot(QStringList)), this, SLOT(onShotSignal(QStringList)));
 
     // Трансляция команд от виджета калибровки объекту управления исполнительными механизмами.  Убрать после объединения!!!
-    QObject::connect(calibratorWidget, SIGNAL(shiftX(int)), arduino, SLOT(shiftX(int)));
-    QObject::connect(calibratorWidget, SIGNAL(shiftY(int)), arduino, SLOT(shiftY(int)));
-    QObject::connect(calibratorWidget, SIGNAL(shiftZ(int)), arduino, SLOT(shiftZ(int)));
-    QObject::connect(calibratorWidget, SIGNAL(lightOn()), arduino, SLOT(lightOn()));
-    QObject::connect(calibratorWidget, SIGNAL(lightOff()), arduino, SLOT(lightOff()));
-    QObject::connect(calibratorWidget, SIGNAL(getMoveStatus()), arduino, SLOT(sendMoveStatus()));
-    QObject::connect(calibratorWidget, SIGNAL(getCurrentPosition()), arduino, SLOT(sendCurrentPosition()));
-    QObject::connect(calibratorWidget, SIGNAL(goToPosition(int,int,int)), arduino, SLOT(setAPosition(int,int,int)), Qt::BlockingQueuedConnection); // установить в положение калибровки
-    QObject::connect(calibratorWidget, SIGNAL(pauseClicked()), this, SLOT(pauseClicked()));
+    QObject::connect(&calibratorWidget, SIGNAL(shiftX(int)), arduino, SLOT(shiftX(int)));
+    QObject::connect(&calibratorWidget, SIGNAL(shiftY(int)), arduino, SLOT(shiftY(int)));
+    QObject::connect(&calibratorWidget, SIGNAL(shiftZ(int)), arduino, SLOT(shiftZ(int)));
+    QObject::connect(&calibratorWidget, SIGNAL(lightOn()), arduino, SLOT(lightOn()));
+    QObject::connect(&calibratorWidget, SIGNAL(lightOff()), arduino, SLOT(lightOff()));
+    QObject::connect(&calibratorWidget, SIGNAL(getMoveStatus()), arduino, SLOT(sendMoveStatus()));
+    QObject::connect(&calibratorWidget, SIGNAL(getCurrentPosition()), arduino, SLOT(sendCurrentPosition()));
+    QObject::connect(&calibratorWidget, SIGNAL(goToPosition(int,int,int)), arduino, SLOT(setAPosition(int,int,int)), Qt::BlockingQueuedConnection); // установить в положение калибровки
+    QObject::connect(&calibratorWidget, SIGNAL(pauseClicked()), this, SLOT(pauseClicked()));
 
     // Трансляция сигнала о закрытии видеоконтроля в интерфейс управляения экспериментом
-    QObject::connect(calibratorWidget, SIGNAL(resVisualChk()), oExperiments, SLOT(onCloseVisualCtl()));
+    QObject::connect(&calibratorWidget, SIGNAL(resVisualChk()), oExperiments, SLOT(onCloseVisualCtl()));
 
     // Трансляция имени ячейки в виджет видеоконтроля и виджет выбора лунок для подсветки снимаемой
-    QObject::connect(taskExecutor, SIGNAL(holeName(QString)), calibratorWidget, SLOT(setHoleName(QString)));
+    QObject::connect(taskExecutor, SIGNAL(holeName(QString)), &calibratorWidget, SLOT(setHoleName(QString)));
     QObject::connect(taskExecutor, SIGNAL(holeName(QString)), oExperiments, SLOT(curHoleNumber(QString)));
 
     // WebDAV Инициализация, закрытие и передача списка загружаемых файлов.
@@ -140,8 +142,6 @@ MainWindow::~MainWindow()
     videoCapture->wait();
 
     delete videoCapture;
-    delete calibratorWidget;
-
     delete oExperiments;
     delete taskExecutor;
     taskExecutorThread->quit();
@@ -653,9 +653,9 @@ void MainWindow::onExperimentsClicked()                                         
 void MainWindow::videoControlMode(bool control)                                         // Слот вызова окна видеоконтроля - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
 {
     if (control == true)
-        calibratorWidget->showVideoViewer();
+        calibratorWidget.showVideoViewer();
     else
-        calibratorWidget->close();
+        calibratorWidget.close();
 }
 
 void MainWindow::homed(bool success)                                                    // Слот обработки сигнала о завершении "Хоминга". Запускает по сигналу видеозахват и сеть

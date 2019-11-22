@@ -61,7 +61,7 @@ private:
     Termostat *termostat;                                                               // Указатель на объект класса термостата (отдельный поток!)
     Experiments *oExperiments;                                                          // Указатель на объект класса формирования задания для эксперимента. (ПЕРЕНЕСТИ в MainWindow и создать интерфейс!!!)
     NetworkSettings netSettings;                                                        // Объект класса конфигуратора сети. (!!!)
-    CalibratorWidget *calibratorWidget;                                                 // Указатель на объект класса виджета калибратора. (ПЕРЕНЕСТИ в MainWindow интерфейс!!!)
+    CalibratorWidget calibratorWidget;                                                  // Объект класса виджета калибратора. (ПЕРЕНЕСТИ в MainWindow интерфейс ?!!!)
     QProgressDialog *pdlg;                                                              // Указатель на объект командной строки для вызова функций операционной системы
     CaptureThread *videoCapture;                                                        // Указатель на объект видеозахвата
     VideoWidget videoWidget;                                                            // Видеовиджет
@@ -97,7 +97,6 @@ public slots:
     void videoControlMode(bool);                                                        // Включает / отключает отображение виджета видеоконтроля в процессе эксперимента
     void homed(bool);                                                                   // По завершению 'Homing' запускает инициализацию Видеокамеры и Сетевых интерфейсов. (параллельный процесс может вызывать сбои)
     void errard(int);                                                                   // Получает и обрабатывает ошибки от объекта управления контроллером исп.устройств (Arduino)
-
     void onMainClicked();                                                               // Вызывает основное меню
     void onSettingsClicked();                                                           // Вызывает меню настроек
 

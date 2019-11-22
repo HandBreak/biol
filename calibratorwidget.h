@@ -40,11 +40,15 @@ class CalibratorWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit CalibratorWidget(VideoWidget &, QWidget *parent = 0);
+    explicit CalibratorWidget(QWidget *parent = 0);
     ~CalibratorWidget();
+
+    void setVideoWidget(VideoWidget &);
 
 private:
     Ui::CalibratorWidget *ui;
+    QStackedLayout stackedLayout;
+    VideoWidget *v = NULL;
     QWidget *widget;                                                                    // Собственно сам виджет с элементами управления идущий как слой наряду с видеослоем
     QEventLoop loop;                                                                    // Цикл ожидания (для ожидания завершения позиционирования исполнительных устройств)
     Task *currentTask = NULL;                                                           // Указатель на "Задание" для извлечения параметров выбранного планшета

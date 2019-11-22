@@ -3,7 +3,7 @@
 
 #include <QDebug>
 
-CalibratorWidget::CalibratorWidget(VideoWidget &video, QWidget *parent) :               // Инициализируется указателем на виджет видеозахвата
+CalibratorWidget::CalibratorWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::CalibratorWidget)
 {
@@ -12,7 +12,6 @@ CalibratorWidget::CalibratorWidget(VideoWidget &video, QWidget *parent) :       
     ui->pbNext->hide();                                                                 // По умолчанию скрыть кнопку "Дальше"
     updatePos = false;                                                                  // По умолчанию отключено обновление позиций первой и последней лунок в задании
 
-    QStackedLayout *stackedLayout = new QStackedLayout;                                 // Слой элементов управления под видеоокном
     QGridLayout *gridLayout = new QGridLayout;                                          // Слой размещения элементов внутри видеоокна
     widget = new QWidget;                                                               // Создать виджет для размещения элементов управления исполнительными механизмами
 
@@ -98,11 +97,8 @@ CalibratorWidget::CalibratorWidget(VideoWidget &video, QWidget *parent) :       
     //  -- Размещение элементов управления внутри видеоокна          --<!
 
     widget->setLayout(gridLayout);                                                      // Установить слой с элементами управления на виджет
-    ui->videoLayout->addLayout(stackedLayout);                                          // Добавить стек слоёв в область видеовиджета
-    stackedLayout->addWidget(&video);                                                   // Добавить в стек слой видеопотока
-    stackedLayout->addWidget(widget);                                                   // Добавить в стек слой с элементами управления
-    stackedLayout->setStackingMode(QStackedLayout::StackAll);                           // Выбрать режим объединения всех слоёв
-    stackedLayout->setCurrentIndex(1);                                                  // Выбрать активный слой с элементами управления
+    ui->videoLayout->addLayout(&stackedLayout);                                         // Добавить стек слоёв в область видеовиджета
+    stackedLayout.addWidget(widget);                                                    // Добавить в стек слой с элементами управления
 
     QObject::connect(ui->pbAction, SIGNAL(clicked(bool)), this, SLOT(onActionClicked()));
     QObject::connect(ui->pbNext, SIGNAL(clicked(bool)), this, SLOT(onReturnClicked()));
@@ -122,6 +118,13 @@ CalibratorWidget::~CalibratorWidget()
     delete widget;                                                                      // Удалить виджет с элементами управления
     delete ui;
     qDebug() << "Calibrator widget destroyed";
+}
+
+void CalibratorWidget::setVideoWidget(VideoWidget &v)
+{
+    stackedLayout.addWidget(&v);                                                        // Добавить в стек слой видеопотока
+    stackedLayout.setCurrentIndex(0);                                                   // Выбрать активный слой с элементами управления
+    stackedLayout.setStackingMode(QStackedLayout::StackAll);                            // Выбрать режим объединения всех слоёв
 }
 
 void CalibratorWidget::onReturnClicked()
