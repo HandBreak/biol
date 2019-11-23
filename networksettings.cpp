@@ -252,6 +252,11 @@ QStringList NetworkSettings::readLanSettings()
     return ipsettings;
 }
 
+QString NetworkSettings::getLanIp()
+{
+    return readLanSettings().at(0);
+}
+
 void NetworkSettings::setCurrentParameters()
 {
     QStringList wfset = readWiFiSettings();

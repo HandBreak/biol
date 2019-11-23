@@ -69,12 +69,14 @@ MainWindow::MainWindow(QWidget *parent) :
     // Вызов функций модулей из меню основного интерфейса. В том числе вызов самих модулей.  Лишнее убрать!!!
     QObject::connect(ui->pbEmrgStop, SIGNAL(clicked()), arduino, SLOT(emergencyStop()));
     QObject::connect(ui->pbTable, SIGNAL(clicked()), taskExecutor, SLOT(changeTablet()));
-    QObject::connect(ui->pbExpMenu, SIGNAL(clicked()),this, SLOT(onExperimentsClicked()));
-    QObject::connect(ui->pbNetSettings, SIGNAL(clicked(bool)), this, SLOT(onNetSettingsClicked()));
+    QObject::connect(ui->pbResearch, SIGNAL(clicked()),this, SLOT(onExperimentsClicked()));
+    QObject::connect(ui->pbInformation, SIGNAL(clicked()),this, SLOT(onInformationClicked()));
+    QObject::connect(ui->pbNetSettings, SIGNAL(clicked()),this, SLOT(onNetSettingsClicked()));
     QObject::connect(ui->pbCamera, SIGNAL(clicked(bool)), &calibratorWidget, SLOT(showCalibratorCtl()));
 
     // Вызов страницы настроек из меню основного интерфейса.
-    QObject::connect(ui->pbMainWindow, SIGNAL(clicked()), SLOT(onMainClicked()));
+    QObject::connect(ui->pbMainWindow1, SIGNAL(clicked()), SLOT(onMainClicked()));
+    QObject::connect(ui->pbMainWindow2, SIGNAL(clicked()), SLOT(onMainClicked()));
     QObject::connect(ui->pbSettings, SIGNAL(clicked()), SLOT(onSettingsClicked()));
 
     // Отработка сигналов возврата в основное меню из модулей. Убрать после объединения !!!
@@ -85,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(oExperiments, SIGNAL(letsStart(Task*)), taskExecutor, SLOT(startExperiment(Task*)));  // Передаёт исполнителю Задание
     QObject::connect(oExperiments, SIGNAL(bottomLimit(int)), arduino, SLOT(setBottomLimit(int)));          // Передаёт объекту управления ИМ допустимую нижнюю границу по Z для типа планшета
     QObject::connect(oExperiments, SIGNAL(videoControl(bool)), this, SLOT(videoControlMode(bool)));        // Позволяет включать/отключать видеоконтроль во время опыта
-    QObject::connect(oExperiments, SIGNAL(calibrate(Task*)), &calibratorWidget, SLOT(calibrate(Task*)));    // Передаёт задание калибратору перед началом опыта
+    QObject::connect(oExperiments, SIGNAL(calibrate(Task*)), &calibratorWidget, SLOT(calibrate(Task*)));   // Передаёт задание калибратору перед началом опыта
 
     // Обеспечение обмена сообщениями с демоном термостата и его циклический вызов по таймеру
     QObject::connect(&tsTimer, SIGNAL(timeout()), termostat, SLOT(update()));
@@ -632,6 +634,24 @@ void MainWindow::onMainClicked()
 void MainWindow::onSettingsClicked()
 {
     setCurrentIndex(SETTINGS);
+}
+
+void MainWindow::onInformationClicked()
+{
+    Information info;
+    QStringList infList = info.getSysInfo();
+    if (infList.size() != 6)
+        return;
+    ui->lbIPaddr->setText(netSettings.getLanIp());
+    ui->lbMACaddr->setText(mac.left(17));
+
+    ui->lbFWver->setText(infList.at(0));
+    ui->lbUpdateDate->setText(infList.at(1));
+    ui->lbOSver->setText(infList.at(2));
+    ui->lbCAMver->setText(infList.at(3));
+    ui->lbSYSver->setText(infList.at(4));
+    ui->lbDISPver->setText(infList.at(5));
+    setCurrentIndex(INFORMATION);
 }
 
 void MainWindow::pauseClicked()                                                         // Слот обработки нажатия паузы в опыте - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!

@@ -27,6 +27,7 @@
 #include <QDir>
 
 #include <videowidget.h>
+#include <information.h>
 #include <capturethread.h>
 #include <networksettings.h>
 #include <calibratorwidget.h>
@@ -95,6 +96,7 @@ public slots:
     void pauseClicked();                                                                // При нажатии "Паузы" инвертирует соответствующий флаг в задании (Task) для приостановки/продолжения эксперимента
     void onNetSettingsClicked();                                                        // По нажатию кнопки вызывает интерфейс сетевых настроек (ПЕРЕНЕСТИ в MainWindow интерфейс!!!)
     void onExperimentsClicked();                                                        // По нажатию кнопки вызывает интерфейс свойств эксперимента (ПЕРЕНЕСТИ в MainWindow интерфейс!!!)
+    void onInformationClicked();                                                        // По нажатию кнопки вызывает интерфейс информации о системе
     void videoControlMode(bool);                                                        // Включает / отключает отображение виджета видеоконтроля в процессе эксперимента
     void homed(bool);                                                                   // По завершению 'Homing' запускает инициализацию Видеокамеры и Сетевых интерфейсов. (параллельный процесс может вызывать сбои)
     void errard(int);                                                                   // Получает и обрабатывает ошибки от объекта управления контроллером исп.устройств (Arduino)

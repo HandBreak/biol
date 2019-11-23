@@ -38,7 +38,8 @@ SOURCES += \
     cloud.cpp \
     termostat.cpp \
     actuatorinterface.cpp \
-    taskexecutor.cpp
+    taskexecutor.cpp \
+    information.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -54,7 +55,8 @@ HEADERS += \
     termostat.h \
     actuatorinterface.h \
     taskexecutor.h \
-    actuatorconstants.h
+    actuatorconstants.h \
+    information.h
 
 FORMS += \
         mainwindow.ui \

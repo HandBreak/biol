@@ -22,7 +22,7 @@
    <string>StackedWidget</string>
   </property>
   <property name="currentIndex">
-   <number>2</number>
+   <number>1</number>
   </property>
   <widget class="QWidget" name="pgMainWindow">
    <widget class="QPushButton" name="pbResearch">
@@ -119,7 +119,321 @@
     </property>
    </widget>
   </widget>
-  <widget class="QWidget" name="pgInformation"/>
+  <widget class="QWidget" name="pgInformation">
+   <widget class="QLabel" name="lbSysInfo">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>151</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Системная информация:</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="gbNetwork">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>221</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Сетевые параметры</string>
+    </property>
+    <widget class="QLabel" name="lbIP">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>59</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>IP Адрес:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbMAC">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>MAC Адрес:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbIPaddr">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>20</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>ipaddr</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbMACaddr">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>30</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>macaddr</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="gbVerSW">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>221</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Версия ПО</string>
+    </property>
+    <widget class="QLabel" name="lbFW">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>FW Версия:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbUpdate">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Обновление:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbFWver">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>20</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>fwver</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbUpdateDate">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>30</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>macaddr</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbOS">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>31</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>ОС:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbOSver">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>40</y>
+       <width>180</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>linuxver</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="gbVerHW">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>150</y>
+      <width>221</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Версия оборудования</string>
+    </property>
+    <widget class="QLabel" name="lbCAM">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Камера:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbSYS">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Система:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbCAMver">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>20</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>camver</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbSYSver">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>30</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>sysver</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbDISP">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Дисплей:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbDISPver">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>40</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>dispver</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="pbMainWindow2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>220</y>
+      <width>201</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Главное меню</string>
+    </property>
+    <property name="autoDefault">
+     <bool>false</bool>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
   <widget class="QWidget" name="pgSettings">
    <widget class="QPushButton" name="pbCamera">
     <property name="geometry">
@@ -127,7 +441,7 @@
       <x>20</x>
       <y>20</y>
       <width>201</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="cursor">
@@ -168,9 +482,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>70</y>
+      <y>80</y>
       <width>201</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="cursor">
@@ -189,38 +503,13 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="pbExpMenu">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>120</y>
-      <width>201</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="cursor">
-     <cursorShape>BlankCursor</cursorShape>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="text">
-     <string>Эксперимент</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pbNetSettings">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>220</y>
+      <y>200</y>
       <width>201</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="cursor">
@@ -243,9 +532,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>170</y>
+      <y>140</y>
       <width>201</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="cursor">
@@ -264,13 +553,13 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="pbMainWindow">
+   <widget class="QPushButton" name="pbMainWindow1">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>270</y>
+      <y>260</y>
       <width>201</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="cursor">

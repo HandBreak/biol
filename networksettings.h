@@ -38,6 +38,7 @@ public:
     ~NetworkSettings();
     void setCurrentParameters();                                                        // Заполняет соответствующие поля текущими значениями. Вызывается из MainWindow после инициализации сети
     void initNetwork();                                                                 // Функция инициализация сети. Вызывает системную функцию 'network start'
+    QString getLanIp();
 
 private:
     Ui::NetworkSettings *ui;                                                            // Встроенный интерфейс управления настройками
