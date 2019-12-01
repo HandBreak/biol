@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     expMenu.setBaseSize(240, 320);
     this->addWidget(&netSettings);
     this->addWidget(oExperiments);
+
 //    expMenu.addWidget(oExperiments);                                                  // В ПЕРСПЕКТИВЕ ЗАГРУЖАЕМОЕ МЕНЮ
 //    this->addWidget(&expMenu);
 //    this->addWidget(&calibratorWidget);
@@ -69,22 +70,55 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(this, SIGNAL(lightOff()), arduino, SLOT(lightOff()));
     QObject::connect(this, SIGNAL(coolerOff()), arduino, SLOT(coolerOff()));
 
+    QObject::connect(this, SIGNAL(lightOn()), arduino, SLOT(lightOn()));
+    QObject::connect(this, SIGNAL(coolerOn()), arduino, SLOT(coolerOn()));
+
     // Вызов функций модулей из меню основного интерфейса. В том числе вызов самих модулей.  Лишнее убрать!!!
     QObject::connect(ui->pbEmrgStop, SIGNAL(clicked()), arduino, SLOT(emergencyStop()));
     QObject::connect(ui->pbTable, SIGNAL(clicked()), taskExecutor, SLOT(changeTablet()));
-    QObject::connect(ui->pbResearch, SIGNAL(clicked()),this, SLOT(onExperimentsClicked()));
+    //    QObject::connect(ui->pbResearch, SIGNAL(clicked()),this, SLOT(onExperimentsClicked()));
+    QObject::connect(ui->pbResearch, SIGNAL(clicked()),this, SLOT(onResearchClicked()));
     QObject::connect(ui->pbInformation, SIGNAL(clicked()),this, SLOT(onInformationClicked()));
     QObject::connect(ui->pbNetSettings, SIGNAL(clicked()),this, SLOT(onNetSettingsClicked()));
     QObject::connect(ui->pbCamera, SIGNAL(clicked(bool)), &calibratorWidget, SLOT(showCalibratorCtl()));
 
-    // Вызов страницы настроек из меню основного интерфейса.
+    // Диагностические функции
+    QObject::connect(ui->pbLight, SIGNAL(clicked()), this, SLOT(onLightClicked()));
+    QObject::connect(ui->pbVent, SIGNAL(clicked()), this, SLOT(onVentClicked()));
+
+    // Вызов главного меню из подменю
     QObject::connect(ui->pbMainWindow1, SIGNAL(clicked()), SLOT(onMainClicked()));
     QObject::connect(ui->pbMainWindow2, SIGNAL(clicked()), SLOT(onMainClicked()));
+    QObject::connect(ui->pbMainWindow3, SIGNAL(clicked()), SLOT(onMainClicked()));
+
+    // Вызов страницы настроек из меню основного интерфейса и при возврате
     QObject::connect(ui->pbSettings, SIGNAL(clicked()), SLOT(onSettingsClicked()));
+    QObject::connect(ui->pbTestingBack, SIGNAL(clicked()), SLOT(onSettingsClicked()));
+    QObject::connect(ui->pbTestingBack, SIGNAL(clicked()), &tsTimer, SLOT(start()));
+
+    // Возврат в головное меню исследований
+    QObject::connect(ui->pbGSBack, SIGNAL(clicked()), SLOT(onResearchClicked()));
+    QObject::connect(ui->pbCLBack, SIGNAL(clicked()), SLOT(onResearchClicked()));
+    QObject::connect(ui->pbTXBack, SIGNAL(clicked()), SLOT(onResearchClicked()));
+
+    // Вызов подменю исследований
+    QObject::connect(ui->pbGS, SIGNAL(clicked()), SLOT(onGSClicked()));
+    QObject::connect(ui->pbCL, SIGNAL(clicked()), SLOT(onCLClicked()));
+    QObject::connect(ui->pbTX, SIGNAL(clicked()), SLOT(onTXClicked()));
+
+    // Вызов исследований
+    QObject::connect(ui->pbGSmethod1, SIGNAL(clicked()), SLOT(onMethodSelected()));
+    QObject::connect(ui->pbGSmethod2, SIGNAL(clicked()), SLOT(onMethodSelected()));
+    QObject::connect(ui->pbCLmethod1, SIGNAL(clicked()), SLOT(onMethodSelected()));
+    QObject::connect(ui->pbTXmethod1, SIGNAL(clicked()), SLOT(onMethodSelected()));
+    QObject::connect(ui->pbTXmethod2, SIGNAL(clicked()), SLOT(onMethodSelected()));
+
+    // Вызов подменю диагностики
+    QObject::connect(ui->pbDiagnostic, SIGNAL(clicked()), SLOT(onDiagnosticClicked()));
 
     // Отработка сигналов возврата в основное меню из модулей. Убрать после объединения !!!
-    QObject::connect(oExperiments, SIGNAL(toMainReturn()), this, SLOT(onMainClicked()));
-    QObject::connect(&netSettings, SIGNAL(toMainReturn()), this, SLOT(onMainClicked()));
+    QObject::connect(oExperiments, SIGNAL(toMainReturn()), this, SLOT(onSettingsClicked()));
+    QObject::connect(&netSettings, SIGNAL(toMainReturn()), this, SLOT(onSettingsClicked()));
 
     // Отработка сигналов от модуля управления экспериментом
     QObject::connect(oExperiments, SIGNAL(letsStart(Task*)), taskExecutor, SLOT(startExperiment(Task*)));  // Передаёт исполнителю Задание
@@ -138,6 +172,8 @@ MainWindow::MainWindow(QWidget *parent) :
     emit lightOff();
     emit coolerOff();
     emit doHoming();                                                                    // Отключить все устройства и произвести калибровку механизмов перед началом работы
+    light = false;
+    vent =  false;
 }
 
 MainWindow::~MainWindow()
@@ -668,9 +704,63 @@ void MainWindow::onNetSettingsClicked()                                         
     netSettings.setCurrentParameters();
 }
 
+void MainWindow::onResearchClicked()                                                    // Слот вызова списка методов
+{
+    setCurrentIndex(RESEARCH);
+}
+
 void MainWindow::onExperimentsClicked()                                                 // Слот вызова параметров опыта - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
 {
     setCurrentIndex(EXPERIMENTS);
+}
+
+void MainWindow::onDiagnosticClicked()                                                  // Вызывает интерфейс тестирования - ВРЕМЕННОЕ !!!
+{
+    tsTimer.stop();
+    setCurrentIndex(DIAGNOSTIC);
+}
+
+void MainWindow::onGSClicked()
+{
+    setCurrentIndex(GSMETHODS);
+}
+
+void MainWindow::onCLClicked()
+{
+    setCurrentIndex(CLMETHODS);
+}
+
+void MainWindow::onTXClicked()
+{
+    setCurrentIndex(TXMETHODS);
+}
+
+void MainWindow::onLightClicked()
+{
+    if (!light)
+        emit lightOn();
+    else
+        emit lightOff();
+    light = !light;
+}
+
+void MainWindow::onVentClicked()
+{
+    if (!vent)
+        emit coolerOn();
+    else
+        emit coolerOff();
+    vent = !vent;
+}
+
+void MainWindow::onMethodSelected()
+{
+    // Картинка
+    QPixmap pixmap("qrcode.jpg");
+    QLabel label;
+    label.setPixmap(pixmap);
+    label.setBaseSize(240, 240);
+    onExperimentsClicked();
 }
 
 void MainWindow::videoControlMode(bool control)                                         // Слот вызова окна видеоконтроля - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!

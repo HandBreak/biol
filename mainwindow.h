@@ -23,6 +23,7 @@
 #include <QEventLoop>
 #include <QRegExp>
 #include <QThread>
+#include <QPixmap>
 #include <QTimer>
 #include <QDir>
 
@@ -40,7 +41,8 @@
 #include <actuatorinterface.h>
 #include <actuatorconstants.h>
 
-enum {MAINMENU, INFORMATION, SETTINGS, RESEARCH, NETWORK, EXPERIMENTS};
+//enum {MAINMENU, INFORMATION, SETTINGS, RESEARCH, NETWORK, EXPERIMENTS};
+enum {MAINMENU, INFORMATION, SETTINGS, RESEARCH, GSMETHODS, CLMETHODS, TXMETHODS, DIAGNOSTIC, NETWORK, EXPERIMENTS};
 
 namespace Ui {
 class MainWindow;
@@ -89,6 +91,9 @@ private:
     bool cpToRemovableDrive();                                                          // Функция копирования на съемный носитель
     long checkFreeSpace(QString);                                                       // Функция проверки свободного места. На входе точка монтирования носителя
 
+    bool light;
+    bool vent;
+
 public slots:
     void onShotSignal(QStringList);                                                     // По сигналу от TaskExecutor, получив список параметров съемки, запрашивает кадр у CaptureThread и сохраняет его
     void onExperimentInProgress(bool);                                                  // По началу и завершению эксперимента создаёт каталоги и файл описания или переименовывает и отправляет его в NextCloud
@@ -98,16 +103,28 @@ public slots:
     void onNetSettingsClicked();                                                        // По нажатию кнопки вызывает интерфейс сетевых настроек (ПЕРЕНЕСТИ в MainWindow интерфейс!!!)
     void onExperimentsClicked();                                                        // По нажатию кнопки вызывает интерфейс свойств эксперимента (ПЕРЕНЕСТИ в MainWindow интерфейс!!!)
     void onInformationClicked();                                                        // По нажатию кнопки вызывает интерфейс информации о системе
+    void onResearchClicked();                                                           // По нажатию кнопки вызывает интерфейс выбора метода
+    void onDiagnosticClicked();                                                         // Вызывает интерфейс тестирования - ВРЕМЕННОЕ !!!
+    void onGSClicked();
+    void onCLClicked();
+    void onTXClicked();
+    void onLightClicked();
+    void onVentClicked();
     void videoControlMode(bool);                                                        // Включает / отключает отображение виджета видеоконтроля в процессе эксперимента
     void homed(bool);                                                                   // По завершению 'Homing' запускает инициализацию Видеокамеры и Сетевых интерфейсов. (параллельный процесс может вызывать сбои)
     void errard(int);                                                                   // Получает и обрабатывает ошибки от объекта управления контроллером исп.устройств (Arduino)
     void onMainClicked();                                                               // Вызывает основное меню
     void onSettingsClicked();                                                           // Вызывает меню настроек
+    void onMethodSelected();                                                            // Вызывает отображение QR-кода и процесс исследования
 
 signals:
     void doHoming();                                                                    // Вызывает 'Homing' при запуске программного обеспечения
     void lightOff();                                                                    // Гасит подстветку при запуске ПО
     void coolerOff();                                                                   // Отключает вентиляцию при запуске ПО
+
+    void lightOn();                                                                     // Включает подстветку !!!
+    void coolerOn();                                                                    // Включает вентиляцию !!!
+
     void heaterOff();                                                                   // Отключает подогрев при запуске ПО
     void cloudConnInit(bool);                                                           // Запрашивает открытие соединения с NextCloud
     void sendToCloud(QString);                                                          // Запрашивает отправку файла в NextCloud

@@ -22,7 +22,7 @@
    <string>StackedWidget</string>
   </property>
   <property name="currentIndex">
-   <number>3</number>
+   <number>6</number>
   </property>
   <widget class="QWidget" name="pgMainWindow">
    <widget class="QPushButton" name="pbResearch">
@@ -404,9 +404,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>220</y>
+      <y>260</y>
       <width>201</width>
-      <height>81</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
@@ -451,7 +451,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
-     <string>Камера</string>
+     <string>Настройка камеры</string>
     </property>
     <property name="default">
      <bool>true</bool>
@@ -478,57 +478,7 @@
      <string>Вкладка настроек - временная</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pbEmrgStop">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>80</y>
-      <width>201</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="cursor">
-     <cursorShape>BlankCursor</cursorShape>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="text">
-     <string>Остановить !</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pbNetSettings">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>200</y>
-      <width>201</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="cursor">
-     <cursorShape>BlankCursor</cursorShape>
-    </property>
-    <property name="focusPolicy">
-     <enum>Qt::NoFocus</enum>
-    </property>
-    <property name="text">
-     <string>Параметры сети</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pbTable">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -544,7 +494,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
-     <string>Извлечь планшет</string>
+     <string>Настройка сети</string>
     </property>
     <property name="default">
      <bool>true</bool>
@@ -578,6 +528,56 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="pbCamera_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Калибровка планшета</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbDiagnostic">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>200</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Диагностика</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QWidget" name="pgResearch">
    <widget class="QPushButton" name="pbGS">
@@ -586,7 +586,7 @@
       <x>20</x>
       <y>20</y>
       <width>201</width>
-      <height>81</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="cursor">
@@ -609,9 +609,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>120</y>
+      <y>80</y>
       <width>201</width>
-      <height>81</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="cursor">
@@ -634,9 +634,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>220</y>
+      <y>140</y>
       <width>201</width>
-      <height>81</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="cursor">
@@ -647,6 +647,364 @@
     </property>
     <property name="text">
      <string>Токсичность</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbMainWindow3">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>260</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Главное меню</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="pgGS">
+   <widget class="QPushButton" name="pbGSmethod1">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Фибринолиз (96)</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbGSmethod2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Коагуляция (96)</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbGSBack">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>260</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Назад</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="pgCL">
+   <widget class="QPushButton" name="pbCLmethod1">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Комплимент (96)</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbCLBack">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>260</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Назад</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="pgTX">
+   <widget class="QPushButton" name="pbTXBack">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>260</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Назад</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbTXmethod1">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Paramecium (24)</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbTXmethod2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Tetrahymena (96)</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="pgTesting">
+   <widget class="QPushButton" name="pbEmrgStop">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Остановить !</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbTable">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Извлечь планшет</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbTestingBack">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>260</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Назад</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbLight">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>140</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Подсветка</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbVent">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>200</y>
+      <width>201</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>BlankCursor</cursorShape>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="text">
+     <string>Вентиляция</string>
     </property>
     <property name="default">
      <bool>true</bool>

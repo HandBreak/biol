@@ -39,7 +39,8 @@ SOURCES += \
     termostat.cpp \
     actuatorinterface.cpp \
     taskexecutor.cpp \
-    information.cpp
+    information.cpp \
+    qdynamicwidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -56,7 +57,8 @@ HEADERS += \
     actuatorinterface.h \
     taskexecutor.h \
     actuatorconstants.h \
-    information.h
+    information.h \
+    qdynamicwidget.h
 
 FORMS += \
         mainwindow.ui \
