@@ -42,8 +42,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     oExperiments = new Experiments(0, &task);                                           // Инициализируем объект настройки опыта
 
+    expMenu.setBaseSize(240, 320);
     this->addWidget(&netSettings);
     this->addWidget(oExperiments);
+//    expMenu.addWidget(oExperiments);                                                  // В ПЕРСПЕКТИВЕ ЗАГРУЖАЕМОЕ МЕНЮ
+//    this->addWidget(&expMenu);
 //    this->addWidget(&calibratorWidget);
 
     tsTimer.setSingleShot(false);

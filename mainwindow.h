@@ -64,6 +64,7 @@ private:
     Experiments *oExperiments;                                                          // Указатель на объект класса формирования задания для эксперимента. (ПЕРЕНЕСТИ в MainWindow и создать интерфейс!!!)
     NetworkSettings netSettings;                                                        // Объект класса конфигуратора сети. (!!!)
     CalibratorWidget calibratorWidget;                                                  // Объект класса виджета калибратора. (ПЕРЕНЕСТИ в MainWindow интерфейс ?!!!)
+    QStackedWidget expMenu;                                                             // Объект меню выбора типа эксперимента
     QProgressDialog *pdlg;                                                              // Указатель на объект командной строки для вызова функций операционной системы
     CaptureThread *videoCapture;                                                        // Указатель на объект видеозахвата
     VideoWidget videoWidget;                                                            // Видеовиджет
