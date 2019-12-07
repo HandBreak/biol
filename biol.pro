@@ -40,7 +40,8 @@ SOURCES += \
     actuatorinterface.cpp \
     taskexecutor.cpp \
     information.cpp \
-    qdynamicwidget.cpp
+    qdynamicwidget.cpp \
+    methodselector.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -58,7 +59,8 @@ HEADERS += \
     taskexecutor.h \
     actuatorconstants.h \
     information.h \
-    qdynamicwidget.h
+    qdynamicwidget.h \
+    methodselector.h
 
 FORMS += \
         mainwindow.ui \

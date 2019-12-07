@@ -760,7 +760,14 @@ void MainWindow::onMethodSelected()
     QLabel label;
     label.setPixmap(pixmap);
     label.setBaseSize(240, 240);
-    onExperimentsClicked();
+    QObject* obj=QObject::sender();
+    QString methodName="";
+    if (QPushButton *pb=qobject_cast<QPushButton *>(obj))
+        methodName=pb->objectName();
+    MethodSelector selector(methodName, &task);
+//    tsTimer.stop();
+    qDebug()<<selector.getMethodName();
+//    onExperimentsClicked();
 }
 
 void MainWindow::videoControlMode(bool control)                                         // Слот вызова окна видеоконтроля - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!
@@ -779,7 +786,7 @@ void MainWindow::homed(bool success)                                            
         if (!videoCapture->isRunning())
         {
             videoCapture->start();                                                      // ДОБАВИТЬ ЗАДЕРЖКУ К ЗАПУСКУ - СОЗДАЕТ ПРОБЛЕМЫ ПОТОКУ ВЫВОДА В TTYS1!!!!
-            netSettings.initNetwork();                                                 // СДЕЛАТЬ ОТДЕЛЬНУЮ ПРОВЕРКУ РАБОТЫ И ЗАПУСКА СЕТИ ПОСЛЕ ХОМИНГА!!!
+            netSettings.initNetwork();                                                  // СДЕЛАТЬ ОТДЕЛЬНУЮ ПРОВЕРКУ РАБОТЫ И ЗАПУСКА СЕТИ ПОСЛЕ ХОМИНГА!!!
         }
     }
     else

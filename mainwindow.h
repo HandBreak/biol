@@ -38,6 +38,7 @@
 #include <termostat.h>
 #include <experiments.h>
 #include <taskexecutor.h>
+#include <methodselector.h>
 #include <actuatorinterface.h>
 #include <actuatorconstants.h>
 
