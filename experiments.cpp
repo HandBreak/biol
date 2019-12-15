@@ -318,7 +318,7 @@ void Experiments::onContinueClicked()
         return;
     }
     ui->pbContinue->setText(tr("Закрыть"));
-    emit bottomLimit(task->cameraBottomLimit);  // Установить нижнюю границу оси Z для выбранного планшета
+    emit bottomLimit(task->cameraBottomLimit);                          // Установить нижнюю границу оси Z для выбранного планшета
     emit calibrate(task);
 
     if (task->temperatureSet !=0)

@@ -41,7 +41,8 @@ SOURCES += \
     taskexecutor.cpp \
     information.cpp \
     qdynamicwidget.cpp \
-    methodselector.cpp
+    methodselector.cpp \
+    methodsetup.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -60,13 +61,15 @@ HEADERS += \
     actuatorconstants.h \
     information.h \
     qdynamicwidget.h \
-    methodselector.h
+    methodselector.h \
+    methodsetup.h
 
 FORMS += \
         mainwindow.ui \
     experiments.ui \
     networksettings.ui \
-    calibratorwidget.ui
+    calibratorwidget.ui \
+    methodsetup.ui
 
 unix:!macx: LIBS += -L$$PWD/../../../../opt/tslib/lib/ -lts
 LIBS += -L$$PWD/../../../../opt/v4l-utils/lib/ -lv4l2 -lv4lconvert

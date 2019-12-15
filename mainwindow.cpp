@@ -41,10 +41,12 @@ MainWindow::MainWindow(QWidget *parent) :
     videoCapture->capture = true;                                                       // Завершив инициализацию устройства, разрешаем цикл захвата.
 
     oExperiments = new Experiments(0, &task);                                           // Инициализируем объект настройки опыта
+    methodSetup = new MethodSetup(0, &task);                                            // Инициализируем объект настройки опыта
 
     expMenu.setBaseSize(240, 320);
     this->addWidget(&netSettings);
     this->addWidget(oExperiments);
+    this->addWidget(methodSetup);
 
 //    expMenu.addWidget(oExperiments);                                                  // В ПЕРСПЕКТИВЕ ЗАГРУЖАЕМОЕ МЕНЮ
 //    this->addWidget(&expMenu);
@@ -119,18 +121,26 @@ MainWindow::MainWindow(QWidget *parent) :
     // Отработка сигналов возврата в основное меню из модулей. Убрать после объединения !!!
     QObject::connect(oExperiments, SIGNAL(toMainReturn()), this, SLOT(onSettingsClicked()));
     QObject::connect(&netSettings, SIGNAL(toMainReturn()), this, SLOT(onSettingsClicked()));
+    QObject::connect(methodSetup, SIGNAL(toMainReturn()), this, SLOT(onResearchClicked()));
 
     // Отработка сигналов от модуля управления экспериментом
     QObject::connect(oExperiments, SIGNAL(letsStart(Task*)), taskExecutor, SLOT(startExperiment(Task*)));  // Передаёт исполнителю Задание
     QObject::connect(oExperiments, SIGNAL(bottomLimit(int)), arduino, SLOT(setBottomLimit(int)));          // Передаёт объекту управления ИМ допустимую нижнюю границу по Z для типа планшета
     QObject::connect(oExperiments, SIGNAL(videoControl(bool)), this, SLOT(videoControlMode(bool)));        // Позволяет включать/отключать видеоконтроль во время опыта
     QObject::connect(oExperiments, SIGNAL(calibrate(Task*)), &calibratorWidget, SLOT(calibrate(Task*)));   // Передаёт задание калибратору перед началом опыта
+    // -тоже от нового модуля управления -
+    QObject::connect(methodSetup, SIGNAL(letsStart(Task*)), taskExecutor, SLOT(startExperiment(Task*)));   // Передаёт исполнителю Задание
+    QObject::connect(methodSetup, SIGNAL(bottomLimit(int)), arduino, SLOT(setBottomLimit(int)));           // Передаёт объекту управления ИМ допустимую нижнюю границу по Z для типа планшета
+    QObject::connect(methodSetup, SIGNAL(calibrate(Task*)), &calibratorWidget, SLOT(calibrate(Task*)));    // Передаёт задание калибратору перед началом опыта
+    QObject::connect(methodSetup, SIGNAL(videoControl(bool)), this, SLOT(videoControlMode(bool)));        // Позволяет включать/отключать видеоконтроль во время опыта
 
     // Обеспечение обмена сообщениями с демоном термостата и его циклический вызов по таймеру
     QObject::connect(&tsTimer, SIGNAL(timeout()), termostat, SLOT(update()));
+    QObject::connect(methodSetup, SIGNAL(setTermostat(short)), termostat, SLOT(setTemperature(short)));    // Термостат
     QObject::connect(oExperiments, SIGNAL(setTermostat(short)), termostat, SLOT(setTemperature(short)));
     QObject::connect(taskExecutor, SIGNAL(setTermostat(short)), termostat, SLOT(setTemperature(short)));
     QObject::connect(termostat, SIGNAL(heated()), &oExperiments->qmsg, SLOT(close()));
+    QObject::connect(termostat, SIGNAL(heated()), &methodSetup->qmsg, SLOT(close()));
     // QObject::connect(termostat, SIGNAL(heatUp(short)), oExperiments, SLOT(dispTemp(short)));
 
     // Приём сообщений от исполнителя заданий. (Состояние эксперимента и описание кадров)
@@ -151,10 +161,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Трансляция сигнала о закрытии видеоконтроля в интерфейс управляения экспериментом
     QObject::connect(&calibratorWidget, SIGNAL(resVisualChk()), oExperiments, SLOT(onCloseVisualCtl()));
+    QObject::connect(&calibratorWidget, SIGNAL(resVisualChk()), methodSetup, SLOT(onCloseVisualCtl()));
 
     // Трансляция имени ячейки в виджет видеоконтроля и виджет выбора лунок для подсветки снимаемой
     QObject::connect(taskExecutor, SIGNAL(holeName(QString)), &calibratorWidget, SLOT(setHoleName(QString)));
     QObject::connect(taskExecutor, SIGNAL(holeName(QString)), oExperiments, SLOT(curHoleNumber(QString)));
+    QObject::connect(taskExecutor, SIGNAL(holeName(QString)), methodSetup, SLOT(curHoleNumber(QString)));
 
     // WebDAV Инициализация, закрытие и передача списка загружаемых файлов.
     QObject::connect(this, SIGNAL(sendToCloud(QString)), webdav, SLOT(curlSendFile(QString)));
@@ -765,9 +777,13 @@ void MainWindow::onMethodSelected()
     if (QPushButton *pb=qobject_cast<QPushButton *>(obj))
         methodName=pb->objectName();
     MethodSelector selector(methodName, &task);
+    selector.setTaskMode();                                                             // Настраиваем задание в соответствие выбранному методу
+    qDebug()<<selector.getMethodName();                                                 // !!!
 //    tsTimer.stop();
-    qDebug()<<selector.getMethodName();
 //    onExperimentsClicked();
+    setCurrentIndex(METHODSETUP);
+    methodSetup->updateCtrlState();
+    methodSetup->showMethodCtrl();
 }
 
 void MainWindow::videoControlMode(bool control)                                         // Слот вызова окна видеоконтроля - ПОД ОБЪЕДИНЕНИЕ С MainWindow !!!

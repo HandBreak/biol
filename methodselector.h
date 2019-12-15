@@ -24,13 +24,6 @@ private:
     void selHoles24();
     void selHoles48();
     void selHoles96();
-    void set();
-
-signals:
-    void letsStart(Task *task);
-    void calibrate(Task *task);
-
-public slots:
 };
 
 #endif // METHODSELECTOR_H

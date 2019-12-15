@@ -37,13 +37,14 @@
 #include <arduino.h>
 #include <termostat.h>
 #include <experiments.h>
+#include <methodsetup.h>
 #include <taskexecutor.h>
 #include <methodselector.h>
 #include <actuatorinterface.h>
 #include <actuatorconstants.h>
 
 //enum {MAINMENU, INFORMATION, SETTINGS, RESEARCH, NETWORK, EXPERIMENTS};
-enum {MAINMENU, INFORMATION, SETTINGS, RESEARCH, GSMETHODS, CLMETHODS, TXMETHODS, DIAGNOSTIC, NETWORK, EXPERIMENTS};
+enum {MAINMENU, INFORMATION, SETTINGS, RESEARCH, GSMETHODS, CLMETHODS, TXMETHODS, DIAGNOSTIC, NETWORK, EXPERIMENTS, METHODSETUP};
 
 namespace Ui {
 class MainWindow;
@@ -65,6 +66,7 @@ private:
     TaskExecutor *taskExecutor;                                                         // Указатель на объект класса исполнителя задания эксперимента (отдельный поток!)
     Termostat *termostat;                                                               // Указатель на объект класса термостата (отдельный поток!)
     Experiments *oExperiments;                                                          // Указатель на объект класса формирования задания для эксперимента. (ПЕРЕНЕСТИ в MainWindow и создать интерфейс!!!)
+    MethodSetup *methodSetup;                                                           // Указатель на объект класса формирования задания для эксперимента.
     NetworkSettings netSettings;                                                        // Объект класса конфигуратора сети. (!!!)
     CalibratorWidget calibratorWidget;                                                  // Объект класса виджета калибратора. (ПЕРЕНЕСТИ в MainWindow интерфейс ?!!!)
     QStackedWidget expMenu;                                                             // Объект меню выбора типа эксперимента
