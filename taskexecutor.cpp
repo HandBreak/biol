@@ -9,7 +9,7 @@ TaskExecutor::TaskExecutor(Arduino *aci, QObject *parent) : QObject(parent)
 bool TaskExecutor::startExperiment(Task *t)
 {
     this->task = t;
-    qDebug()<<"Опыт начат!";
+    qDebug()<<"Experiment started!";
     speed = 3000;
     task->openTray = false;
     task->continueFlag = true;
@@ -27,6 +27,16 @@ bool TaskExecutor::startExperiment(Task *t)
 
     // Блок предварительного подсчета максимального числа снимков в эксперименте для вычисления занимаемого места на диске
     holes = 0;
+
+    int h = 0;
+    for (short j = y1; j <= y3; j++)                                                    // Считаем число планируемых снимков лунок
+    {
+        for (short i = x1; i <= x3; i++)
+            h = h + !task->excludedHole[i][j];
+    }
+    h = h * task->shotPerCycle;                                                         // Помножим на количество кадров в цикле
+    h = h * task->numberCycles;                                                         // Помножим на количество циклов
+
     if ((task->numberCycles <= 1) && (task->experimentTime > 0))
     {
         holes = task->experimentTime /                                                  // Расчет предельного числа снимков лунок по времени проведения эксперимента
@@ -36,13 +46,15 @@ bool TaskExecutor::startExperiment(Task *t)
     }
     else
     {
-        for (short j = y1; j <= y3; j++)                                                // Считаем число планируемых снимков лунок
-        {
-            for (short i = x1; i <= x3; i++)
-                holes = holes + !task->excludedHole[i][j];
-        }
-        holes = holes * task->shotPerCycle;                                             // Помножим на количество кадров в цикле
-        holes = holes * task->numberCycles;                                             // Помножим на количество циклов
+        holes = h;
+
+    }
+    if (!h)
+    {
+        task->continueFlag = false;
+        emit setTermostat(0);
+        emit experimentInProgress(false);
+        return false;
     }
     // Конец блока предварительной оценки максимального числа снимков
 
@@ -58,10 +70,15 @@ bool TaskExecutor::startExperiment(Task *t)
     for (short loops = 1; loops <= task->numberCycles; loops++)                         // Количество прогонов
     {
         arduino->setAbsoluteCoordinates();                                              // Перейти к абсолютным координатам
-        arduino->setAPosition(task->holeFirstXPosition,\
-                              task->holeFirstYPosition,\
-                              task->cameraPosition,\
-                              speed);
+        if (loops == 1)
+        {
+            arduino->setAPosition(task->holeFirstXPosition,\
+                                  task->holeFirstYPosition,\
+                                  task->cameraPosition,\
+                                  speed);
+        }
+        else
+            arduino->setZPosition(task->cameraPosition);                                // Альтернатива без позиционирования в A0
 
         while (arduino->getMoveStatus() == 1)                                           // Ждем выполнения
             arduino->sleep(20);                                                         // Опрос каждые 20мс  ДОБАВЛЕНО 050419
@@ -69,10 +86,31 @@ bool TaskExecutor::startExperiment(Task *t)
              j <= y3; \
              j++)
         {
+            bool e = true;
             if (task->horizontMovement)
+            {
+                for (short i = x1; \
+                     i <= x3; \
+                     i++)
+                {
+                    e &= task->excludedHole[i][j];
+                }
+                if (e)
+                    continue;
                 arduino->setYPosition(y + y2 * j, eYspeed);
+            }
             else
+            {
+                for (short i = x1; \
+                     i <= x3; \
+                     i++)
+                {
+                    e &= task->excludedHole[j][i];
+                }
+                if (e)
+                    continue;
                 arduino->setXPosition(y + y2 * j, eXspeed);
+            }
             while (arduino->getMoveStatus() == 1)                                       // Ждем выполнения
                 arduino->sleep(20);                                                     // Опрос каждые 20мс  ДОБАВЛЕНО 050419
             for (short i = x1; \
@@ -94,18 +132,18 @@ bool TaskExecutor::startExperiment(Task *t)
                 while (arduino->getMoveStatus() == 1)                                   // Ждем завершения перемещения
                     arduino->sleep(20);                                                 // Опрос каждые 20мс  ДОБАВЛЕНО 050419
 
-                emit holeName(QChar(65 + j).toAscii() + QString::number(i + 1));        // Послать номер текущей ячейки
-                arduino->lightOn();                                                     // Включить подсветку
-                arduino->sleep(20);                                                     // Задержка перед передачей температуры
                 arduino->sendTemperature();                                             // Измерить и отправить текущие температуры
-                arduino->sleep(40);
-    // РЕШИТЬ ВОПРОС ДВОЙНОГО ЗАМЕРА ТЕМПЕРАТУРЫ (повторный для извлечения параметров съемки)
+                arduino->sleep(20);
                 short shots = task->shotPerCycle;
+                if (shots != 0 && task->doingShake == true) {                           // Если делаем снимок и включено встряхивание
+                    shakeTablet();                                                      // Встряхнем планшет
+                    arduino->sleep(task->delayAfterShake);                              // Задержка после встряхивания
+                }
+                arduino->lightOn();                                                     // Включить подсветку
+                arduino->sleep(100);
+    // РЕШИТЬ ВОПРОС ДВОЙНОГО ЗАМЕРА ТЕМПЕРАТУРЫ (повторный для извлечения параметров съемки)
                 while (shots != 0) {
-                    if (task->doingShake == true) {
-                        shakeTablet();                                                  // Встряхнем планшет
-                    }
-                    arduino->sleep(task->shotInterval);
+                    emit holeName(QChar(65 + j).toAscii() + QString::number(i + 1));        // Послать номер текущей ячейки
                     if (task->horizontMovement)
                         getShot(i, j, l,\
                                 task->shotPerCycle - shots,\
@@ -115,6 +153,7 @@ bool TaskExecutor::startExperiment(Task *t)
                                 task->shotPerCycle - shots,\
                                 QDateTime::currentMSecsSinceEpoch() - startTime);       // Делаем снимок// Делаем снимок
                     shots--;                                                            // Уменьшаем счетчик снимков на единицу
+                    arduino->sleep(task->shotInterval);
                 }
                 arduino->sleep(100);                                                    // Задержка на 0,1 сек для завершения съемки кадра камерой прежде чем гасить свет
     // РЕШИТЬ ВОПРОС С ЗАДЕРЖКОЙ, ВЕРОЯТНО НУЖНА ПРОВЕРКА ФЛАГА takeshot
@@ -152,12 +191,16 @@ bool TaskExecutor::startExperiment(Task *t)
         l++;                                                                            // Увеличим количество полных циклов на единицу
        if (endTime >= QDateTime::currentMSecsSinceEpoch())
            --loops;
+       if (loops <= task->numberCycles)
+           arduino->sleep(task->delayAfterLoop);                                        // Ожидание, если не последний цикл
     }
     changeTablet();
     task->continueFlag = false;
     emit setTermostat(0);                                                               // Выключить термостабилизацию
     arduino->heatingOff();
+    arduino->lightOff();
     emit experimentInProgress(false);
+    qDebug()<<"Experiment ended!";
     return true;
 }
 

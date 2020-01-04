@@ -428,12 +428,6 @@
     <property name="text">
      <string>Начать!</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbPause">
     <property name="geometry">
@@ -456,12 +450,6 @@
     <property name="text">
      <string>Пауза</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbCancel">
     <property name="geometry">
@@ -483,12 +471,6 @@
     </property>
     <property name="text">
      <string>Отмена</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="chkStartOf">

@@ -22,7 +22,7 @@
    <string>StackedWidget</string>
   </property>
   <property name="currentIndex">
-   <number>6</number>
+   <number>0</number>
   </property>
   <widget class="QWidget" name="pgMainWindow">
    <widget class="QPushButton" name="pbResearch">
@@ -48,12 +48,6 @@
     <property name="text">
      <string>Исследования</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbSettings">
     <property name="geometry">
@@ -78,12 +72,6 @@
     <property name="text">
      <string>Настройка системы</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbInformation">
     <property name="geometry">
@@ -107,15 +95,6 @@
     </property>
     <property name="text">
      <string>Информация</string>
-    </property>
-    <property name="autoDefault">
-     <bool>false</bool>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -423,15 +402,6 @@
     <property name="text">
      <string>Главное меню</string>
     </property>
-    <property name="autoDefault">
-     <bool>false</bool>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
   </widget>
   <widget class="QWidget" name="pgSettings">
@@ -452,12 +422,6 @@
     </property>
     <property name="text">
      <string>Настройка камеры</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLabel" name="lbSetLabel">
@@ -496,12 +460,6 @@
     <property name="text">
      <string>Настройка сети</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbMainWindow1">
     <property name="geometry">
@@ -520,12 +478,6 @@
     </property>
     <property name="text">
      <string>Главное меню</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="pbCamera_2">
@@ -546,12 +498,6 @@
     <property name="text">
      <string>Калибровка планшета</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbDiagnostic">
     <property name="geometry">
@@ -570,12 +516,6 @@
     </property>
     <property name="text">
      <string>Диагностика</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -598,12 +538,6 @@
     <property name="text">
      <string>Гемостаз</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbCL">
     <property name="geometry">
@@ -622,12 +556,6 @@
     </property>
     <property name="text">
      <string>Комплимент</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="pbTX">
@@ -648,12 +576,6 @@
     <property name="text">
      <string>Токсичность</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbMainWindow3">
     <property name="geometry">
@@ -672,12 +594,6 @@
     </property>
     <property name="text">
      <string>Главное меню</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -700,12 +616,6 @@
     <property name="text">
      <string>Фибринолиз (96)</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbGSmethod2">
     <property name="geometry">
@@ -724,12 +634,6 @@
     </property>
     <property name="text">
      <string>Коагуляция (96)</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="pbGSBack">
@@ -750,12 +654,6 @@
     <property name="text">
      <string>Назад</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
   </widget>
   <widget class="QWidget" name="pgCL">
@@ -775,13 +673,7 @@
      <enum>Qt::NoFocus</enum>
     </property>
     <property name="text">
-     <string>Комплимент (96)</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
+     <string>Комплимент (24)</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pbCLBack">
@@ -801,12 +693,6 @@
     </property>
     <property name="text">
      <string>Назад</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -829,12 +715,6 @@
     <property name="text">
      <string>Назад</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbTXmethod1">
     <property name="geometry">
@@ -854,12 +734,6 @@
     <property name="text">
      <string>Paramecium (24)</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbTXmethod2">
     <property name="geometry">
@@ -878,12 +752,6 @@
     </property>
     <property name="text">
      <string>Tetrahymena (96)</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -906,12 +774,6 @@
     <property name="text">
      <string>Остановить !</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbTable">
     <property name="geometry">
@@ -930,12 +792,6 @@
     </property>
     <property name="text">
      <string>Извлечь планшет</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QPushButton" name="pbTestingBack">
@@ -956,12 +812,6 @@
     <property name="text">
      <string>Назад</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbLight">
     <property name="geometry">
@@ -981,12 +831,6 @@
     <property name="text">
      <string>Подсветка</string>
     </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QPushButton" name="pbVent">
     <property name="geometry">
@@ -1005,12 +849,6 @@
     </property>
     <property name="text">
      <string>Вентиляция</string>
-    </property>
-    <property name="default">
-     <bool>true</bool>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
     </property>
    </widget>
   </widget>

@@ -140,11 +140,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(oExperiments, SIGNAL(setTermostat(short)), termostat, SLOT(setTemperature(short)));
     QObject::connect(taskExecutor, SIGNAL(setTermostat(short)), termostat, SLOT(setTemperature(short)));
     QObject::connect(termostat, SIGNAL(heated()), &oExperiments->qmsg, SLOT(close()));
-    QObject::connect(termostat, SIGNAL(heated()), &methodSetup->qmsg, SLOT(close()));
+    QObject::connect(termostat, SIGNAL(heated()), &methodSetup->qmsg, SLOT(reject()));
     // QObject::connect(termostat, SIGNAL(heatUp(short)), oExperiments, SLOT(dispTemp(short)));
 
     // Приём сообщений от исполнителя заданий. (Состояние эксперимента и описание кадров)
-    QObject::connect(taskExecutor, SIGNAL(experimentInProgress(bool)), oExperiments, SLOT(waitEndOfExperiment(bool)));
+//    QObject::connect(taskExecutor, SIGNAL(experimentInProgress(bool)), oExperiments, SLOT(waitEndOfExperiment(bool)));  !!!  Отключен чтобы не вызывать камеру
+    QObject::connect(taskExecutor, SIGNAL(experimentInProgress(bool)), methodSetup, SLOT(expInProcess(bool)));
     QObject::connect(taskExecutor, SIGNAL(experimentInProgress(bool)), this, SLOT(onExperimentInProgress(bool)));
     QObject::connect(taskExecutor, SIGNAL(takeShot(QStringList)), this, SLOT(onShotSignal(QStringList)));
 
@@ -161,7 +162,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Трансляция сигнала о закрытии видеоконтроля в интерфейс управляения экспериментом
     QObject::connect(&calibratorWidget, SIGNAL(resVisualChk()), oExperiments, SLOT(onCloseVisualCtl()));
-    QObject::connect(&calibratorWidget, SIGNAL(resVisualChk()), methodSetup, SLOT(onCloseVisualCtl()));
 
     // Трансляция имени ячейки в виджет видеоконтроля и виджет выбора лунок для подсветки снимаемой
     QObject::connect(taskExecutor, SIGNAL(holeName(QString)), &calibratorWidget, SLOT(setHoleName(QString)));
@@ -418,6 +418,8 @@ bool MainWindow::saveToRemovable(bool mustsave)                                 
                                             0);
 
         //        qmsg->setParent(0);
+        qmsg->setFocusPolicy(Qt::NoFocus);
+        qmsg->setCursor(Qt::BlankCursor);
         short answer = qmsg->exec();                                                    // Ожидаем реакцию пользователя на запрос сохранения результатов на съемный носитель
         delete qmsg;
         if (answer == QMessageBox::Yes)
@@ -461,7 +463,8 @@ bool MainWindow::saveToRemovable(bool mustsave)                                 
                                                     QMessageBox::Yes | QMessageBox::No,
                                                     0);
 
-
+                qmsg->setFocusPolicy(Qt::NoFocus);
+                qmsg->setCursor(Qt::BlankCursor);
                 short answer = qmsg->exec();
                 delete qmsg;
                 if (answer == QMessageBox::Yes)
@@ -608,6 +611,9 @@ bool MainWindow::waitForSending()                                               
     QObject::connect(webdav, SIGNAL(sendOk(short)), this, SLOT(waitProgress(short)));
     pdlg = new QProgressDialog(tr("Завершение передачи\n данных в сеть."),
                                tr("Отменить"), 0, sendcounter);                         // Берем общее число файлов, которые должны быть отправлены в NextCloud
+
+    pdlg->setFocusPolicy(Qt::NoFocus);
+    pdlg->setCursor(Qt::BlankCursor);
     pdlg->setModal(true);
     pdlg->setMaximumWidth(220);
     pdlg->setMinimumDuration(500);                                                      // Первые 0,5 секунды не отрисовываем диалаго и ждем завершения передачи
@@ -648,7 +654,8 @@ void MainWindow::getNotSendList(QStringList nsFilelist)                         
                                             tr("Нажмите \"Yes\" чтобы попытаться еще\n" \
                                                "или \"No\" чтобы сохранить на съемный носитель"),
                                             QMessageBox::Yes | QMessageBox::No, 0);     // Сообщим об ошибке и предложим попробовать передать еще раз
-
+        qmsg->setFocusPolicy(Qt::NoFocus);
+        qmsg->setCursor(Qt::BlankCursor);
         int answer = qmsg->exec();
         delete qmsg;
         if (answer == QMessageBox::Yes)

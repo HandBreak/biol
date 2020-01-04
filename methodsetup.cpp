@@ -7,9 +7,9 @@ MethodSetup::MethodSetup(QWidget *parent, Task *t) :
 {
     this->task = t;
     ui->setupUi(this);
-    ui->rbHoleBacklight->setChecked(true);
     ui->sbInterval->setRange(0,60);
     ui->sbTermostat->setRange(0,50);
+    startPrepare();
     tabletWidget = new TabletWidget;
     ui->pgHoleSelector->setLayout(tabletWidget->stLayout);
 
@@ -20,13 +20,13 @@ MethodSetup::MethodSetup(QWidget *parent, Task *t) :
     QObject::connect(ui->pbNext, SIGNAL(clicked()),this ,SLOT(onNextClicked()));
     QObject::connect(ui->pbContinue, SIGNAL(clicked()),this, SLOT(onContinueClicked()));
     QObject::connect(ui->pbBack, SIGNAL(clicked()), this, SLOT(onBackClicked()));
-    QObject::connect(ui->pbPause, SIGNAL(clicked()), this, SLOT(onPauseClicked()));
-    QObject::connect(ui->cbSaveToCloud, SIGNAL(clicked()),this, SLOT(changedCtrl()));
-    QObject::connect(ui->sbInterval, SIGNAL(valueChanged(int)),this, SLOT(changedCtrl()));
-    QObject::connect(ui->sbTermostat, SIGNAL(valueChanged(int)),this, SLOT(changedCtrl()));
-    QObject::connect(ui->rbDisableCtrl, SIGNAL(clicked()),this, SLOT(changedVisualCtrl()));
-    QObject::connect(ui->rbVisualCtrl, SIGNAL(clicked()),this, SLOT(changedVisualCtrl()));
-    QObject::connect(ui->rbHoleBacklight, SIGNAL(clicked()),this, SLOT(changedVisualCtrl()));
+    QObject::connect(ui->pbStart, SIGNAL(clicked()), this, SLOT(onStartClicked()));
+    QObject::connect(ui->pbEject, SIGNAL(clicked()), this, SLOT(onEjectClicked()));
+    QObject::connect(ui->pbControl, SIGNAL(clicked()), this, SLOT(onControlClicked()));
+    QObject::connect(ui->cbSaveToCloud, SIGNAL(clicked(bool)),this, SLOT(changedCtrl()));
+    QObject::connect(ui->sbInterval, SIGNAL(editingFinished()),this, SLOT(changedCtrl()));
+    QObject::connect(ui->sbTermostat, SIGNAL(editingFinished()),this, SLOT(changedCtrl()));
+    QObject::connect(ui->pbCam, SIGNAL(clicked()),this, SLOT(onCamClicked()));
     QObject::connect(tabletWidget, SIGNAL(toggleHole(QStringList)), this, SLOT(onHoleToggled(QStringList)));
 
     qDebug()<<"Experiments MethodSetup object created!";
@@ -112,19 +112,18 @@ void MethodSetup::onRightClicked()
 
 void MethodSetup::onContinueClicked()
 {
-    if (ui->pbContinue->text() == "Закрыть")
+    if (status != NOTRUNNING)
     {
         setCurrentIndex(0);
-        ui->rbDisableCtrl->setChecked(true);
-        ui->pbContinue->setText(tr("Продолжить"));
         return;
     }
-    ui->pbContinue->setText(tr("Закрыть"));
-    emit bottomLimit(task->cameraBottomLimit);                          // Установить нижнюю границу оси Z для выбранного планшета
+    emit bottomLimit(task->cameraBottomLimit);                                          // Установить нижнюю границу оси Z для выбранного планшета
     emit calibrate(task);
+
+    int exitCode = 0;
     if (task->temperatureSet !=0)
     {
-//        emit setTermostat(task->temperatureSet);
+        emit setTermostat(task->temperatureSet);                                        // !!!
         qmsg.setWindowTitle(tr("Термостабилизация"));
         qmsg.setText(tr("Задана стабилизация тем-\n"  \
                         "пературы эксперимента.  \n"  \
@@ -132,13 +131,24 @@ void MethodSetup::onContinueClicked()
                         "требуемого значения.    \n"  \
                         "Нажмите \"Ок\" для немед-\n" \
                                 "ленного продолжения"));
-        qmsg.exec();
+        qmsg.setFocusPolicy(Qt::NoFocus);
+        qmsg.setCursor(Qt::BlankCursor);
+        exitCode = qmsg.exec();                                                         // !!!  Возвращает Rejected (0) или Close(1024)
+        qDebug()<<exitCode;
     }
-    emit letsStart(task);
+    ui->pbCam->setDisabled(task->doingShake);
+    setCurrentIndex(0);
+    if (exitCode == QMessageBox::Rejected)                                              // !!!
+        onStartClicked();
 }
 
 void MethodSetup::onNextClicked()
 {
+    if (status == INPROCESS || status == PAUSED)
+    {
+        setCurrentIndex(2);
+        return;
+    }
     switch (task->tabletColumns) {
     case 4:
         tabletWidget->setTablet12Holes();
@@ -184,17 +194,63 @@ void MethodSetup::onNextClicked()
 
 void MethodSetup::onBackClicked()
 {
-    task->continueFlag = false;
-    emit toMainReturn();
+    switch (status) {
+    case NOTRUNNING:
+        startPrepare();
+        emit toMainReturn();
+        break;
+//    case INPROCESS:
+
+//        break;
+//    case PAUSED:
+
+//        break;
+    default:
+        if (QMessageBox::Yes == QMessageBox::question(this,                                  // Ожидаем реакции пользователя на предупреждение о необходимости калибровки
+                                            tr("Предупреждение"),
+                                            tr("Желаете прервать\n эксперимент ?\n"),
+                                            QMessageBox::Yes|QMessageBox::No))
+        {
+            task->continueFlag = false;
+            ui->pbBack->setDisabled(true);
+        }
+        break;
+    }
 }
 
-void MethodSetup::onPauseClicked()
+void MethodSetup::onStartClicked()
 {
-    task->pauseEnabled = !task->pauseEnabled;
-    if (task->pauseEnabled)
-        ui->pbPause->setText(tr("Продолжить"));
-    else
-        ui->pbPause->setText(tr("Приостановить"));
+    switch (status) {
+    case NOTRUNNING:
+        expInProcess(true);
+        emit letsStart(task);
+        break;
+    case INPROCESS:
+        ui->pbStart->setText(tr("Продолжить"));
+        status = PAUSED;
+        task->pauseEnabled = true;
+        ui->pbEject->setDisabled(false);
+        break;
+    case PAUSED:
+        ui->pbStart->setText(tr("Приостановить"));
+        status = INPROCESS;
+        task->pauseEnabled = false;
+        ui->pbEject->setDisabled(true);
+        break;
+    default:
+        break;
+    }
+}
+
+void MethodSetup::onEjectClicked()
+{
+    task->openTray = true;
+    ui->pbEject->setDisabled(true);
+}
+
+void MethodSetup::onControlClicked()
+{
+    showMethodCtrl();
 }
 
 void MethodSetup::showMethodCtrl()
@@ -209,9 +265,9 @@ void MethodSetup::showHoleSelector()
 
 void MethodSetup::updateCtrlState()
 {
-    ui->cbSaveToCloud->setChecked(task->sendToCloud);
     ui->sbInterval->setValue(task->shotInterval / 1000);
     ui->sbTermostat->setValue(task->temperatureSet);
+    ui->cbSaveToCloud->setChecked(task->sendToCloud);
 }
 
 void MethodSetup::changedCtrl()
@@ -221,18 +277,47 @@ void MethodSetup::changedCtrl()
     task->temperatureSet = ui->sbTermostat->value();
 }
 
-void MethodSetup::changedVisualCtrl()
+void MethodSetup::onHolesClicked()
 {
-    if (ui->rbHoleBacklight->isChecked() && task->continueFlag)
-    {
-        ui->pbContinue->setText(tr("Закрыть"));
-        showHoleSelector();
-    }
-    else if (ui->rbVisualCtrl->isChecked() && task->continueFlag)
-        emit videoControl(true);
+    ui->pbContinue->setText(tr("Закрыть"));
+    showHoleSelector();
 }
 
-void MethodSetup::onCloseVisualCtl()
+void MethodSetup::onCamClicked()
 {
-    ui->rbDisableCtrl->setChecked(true);
+    emit videoControl(task->continueFlag);
 }
+
+void MethodSetup::expInProcess(bool flag)
+{
+    if (!flag)
+    {
+        startPrepare();
+        emit videoControl(task->continueFlag);
+    }
+    else
+    {
+        status = INPROCESS;
+        ui->pbContinue->setText(tr("Закрыть"));
+        ui->pbStart->setText(tr("Приостановить"));
+        ui->pbBack->setText(tr("Прервать"));
+        ui->pbEject->setDisabled(true);
+    }
+}
+
+void MethodSetup::startPrepare()
+{
+    status = NOTRUNNING;
+    ui->pbStart->setText(tr("Начать"));
+    ui->pbStart->setDisabled(false);
+    ui->pbBack->setText(tr("К выбору метода"));
+    ui->pbBack->setDisabled(false);
+    ui->pbContinue->setText(tr("Продолжить"));
+    ui->pbEject->setDisabled(true);
+    ui->pbCam->setDisabled(false);
+    task->pauseEnabled = false;
+    task->continueFlag = false;
+    task->openTray = false;
+    emit setTermostat(0);
+}
+

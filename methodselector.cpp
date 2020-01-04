@@ -22,6 +22,7 @@ void MethodSelector::setTaskMode()
     task->doingShake = false;
     task->sendToCloud = true;
     task->openTray = false;
+    task->delayAfterLoop = 0;
     task->shotPerCycle = 1;
     task->numberCycles = 1;
     task->temperatureSet = 0;
@@ -42,13 +43,13 @@ void MethodSelector::setTaskMode()
         task->experimentTime = 2 * 3600000;                                             // Время эксперимента не более 2 часов
         switch (version.toShort()) {
         case 1:
-            task->shotInterval = 15000;                                                 // (15 сек) !!! Только для одной лунки. Нужна возможность изменять время !!!
+            task->delayAfterLoop = 15000;                                               // (15 сек) !!! Только для одной лунки. Нужна возможность изменять время !!!
             break;
         case 2:
-            task->shotInterval = 30000;                                                 // (30 сек) !!! Только для одной лунки. Нужна возможность изменять время !!!
+            task->delayAfterLoop = 30000;                                               // (30 сек) !!! Только для одной лунки. Нужна возможность изменять время !!!
             break;
         default:
-            task->shotInterval = 1000;                                                  // (1 сек) !!! Только для одной лунки. Нужна возможность изменять время !!!
+            task->delayAfterLoop = 1000;                                                // (1 сек) !!! Только для одной лунки. Нужна возможность изменять время !!!
             break;
         }
     }
@@ -56,7 +57,7 @@ void MethodSelector::setTaskMode()
     {
         task->methodName = "Complement";
         task->temperatureSet = 25;
-        selHoles96();
+        selHoles24();
         task->doingShake = true;
         task->experimentTime = 2 * 3600000;                                             // Время эксперимента не более 2 часов
         task->shotPerCycle = 2;                                                         // Сделать время между циклами не менее 1 минуты !!!
@@ -79,6 +80,8 @@ void MethodSelector::setTaskMode()
             break;
         }
     }
+    if (task->doingShake == true)
+        task->delayAfterShake = 3000;                                                   // 3-х секундная задержка, если выбрано встряхивание
 }
 
 void MethodSelector::selHoles12()

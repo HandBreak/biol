@@ -37,12 +37,6 @@
    <property name="text">
     <string>Пауза</string>
    </property>
-   <property name="default">
-    <bool>true</bool>
-   </property>
-   <property name="flat">
-    <bool>true</bool>
-   </property>
   </widget>
   <widget class="QPushButton" name="pbExit">
    <property name="geometry">
@@ -58,12 +52,6 @@
    </property>
    <property name="text">
     <string>Выход</string>
-   </property>
-   <property name="default">
-    <bool>true</bool>
-   </property>
-   <property name="flat">
-    <bool>true</bool>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupBox">
@@ -202,12 +190,6 @@
    </property>
    <property name="text">
     <string>Далее</string>
-   </property>
-   <property name="default">
-    <bool>true</bool>
-   </property>
-   <property name="flat">
-    <bool>true</bool>
    </property>
   </widget>
  </widget>

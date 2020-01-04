@@ -9,6 +9,8 @@
 #include <tabletwidget.h>
 #include <task.h>
 
+enum {NOTRUNNING, INPROCESS, PAUSED};
+
 namespace Ui {
 class MethodSetup;
 }
@@ -30,6 +32,8 @@ private:
     TabletWidget *tabletWidget;
     Task *task;
     short x,y;
+    short status;                                                                       // Текущий режим: 0 - Эксперимент не начат/завершен, 1 - в процессе, 2 - пауза
+    void startPrepare();
 
 private slots:
     void changedCtrl();
@@ -37,14 +41,18 @@ private slots:
     void onRightClicked();
     void onLeftClicked();
     void onBackClicked();
-    void onPauseClicked();
+    void onStartClicked();
+    void onEjectClicked();
+    void onControlClicked();
+    void onHolesClicked();
+    void onCamClicked();
     void onContinueClicked();
-    void changedVisualCtrl();
-    void onCloseVisualCtl();
     void onHoleToggled(QStringList);
     void curHoleNumber(QString);
     void restColor();
 //    void onSelectHoleCtlToggled(bool);
+public slots:
+    void expInProcess(bool);
 
 signals:
     void letsStart(Task *task);

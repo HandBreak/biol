@@ -188,12 +188,6 @@
    <property name="text">
     <string>Accept</string>
    </property>
-   <property name="default">
-    <bool>true</bool>
-   </property>
-   <property name="flat">
-    <bool>true</bool>
-   </property>
   </widget>
   <widget class="QPushButton" name="pbExit">
    <property name="geometry">
@@ -209,12 +203,6 @@
    </property>
    <property name="text">
     <string>Exit</string>
-   </property>
-   <property name="default">
-    <bool>true</bool>
-   </property>
-   <property name="flat">
-    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLineEdit" name="lnAddr_2">
