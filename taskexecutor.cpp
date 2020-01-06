@@ -97,7 +97,7 @@ bool TaskExecutor::startExperiment(Task *t)
                 }
                 if (e)
                     continue;
-                arduino->setYPosition(y + y2 * j, eYspeed);
+//                arduino->setYPosition(y + y2 * j, eYspeed);
             }
             else
             {
@@ -109,7 +109,7 @@ bool TaskExecutor::startExperiment(Task *t)
                 }
                 if (e)
                     continue;
-                arduino->setXPosition(y + y2 * j, eXspeed);
+//                arduino->setXPosition(y + y2 * j, eXspeed);
             }
             while (arduino->getMoveStatus() == 1)                                       // Ждем выполнения
                 arduino->sleep(20);                                                     // Опрос каждые 20мс  ДОБАВЛЕНО 050419
@@ -121,13 +121,21 @@ bool TaskExecutor::startExperiment(Task *t)
                 {
                     if (task->excludedHole[i][j])
                         continue;
-                    arduino->setXPosition(x + x2 * i, eXspeed);
+//                    arduino->setXPosition(x + x2 * i, eXspeed);
+                    arduino->setAPosition(x + x2 * i,\
+                                          y + y2 * j,\
+                                          task->cameraPosition,\
+                                          speed);
                 }
                 else
                 {
                     if (task->excludedHole[j][i])
                         continue;
-                    arduino->setYPosition(x + x2 * i, eYspeed);
+//                    arduino->setYPosition(x + x2 * i, eYspeed);
+                    arduino->setAPosition(y + y2 * j,\
+                                          x + x2 * i,\
+                                          task->cameraPosition,\
+                                          speed);
                 }
                 while (arduino->getMoveStatus() == 1)                                   // Ждем завершения перемещения
                     arduino->sleep(20);                                                 // Опрос каждые 20мс  ДОБАВЛЕНО 050419
@@ -140,7 +148,8 @@ bool TaskExecutor::startExperiment(Task *t)
                     arduino->sleep(task->delayAfterShake);                              // Задержка после встряхивания
                 }
                 arduino->lightOn();                                                     // Включить подсветку
-                arduino->sleep(100);
+    // РЕШИТЬ ВОПРОС С ЗАДЕРЖКОЙ, ВЕРОЯТНО НУЖНО ОЖИДАНИЕ ОТВЕТА ОТ КОНТРОЛЛЕРА "ОК"
+                arduino->sleep(300);                                                    // Задержка на 0,3 сек для завершения операции включения света перед фиксацией кадра
     // РЕШИТЬ ВОПРОС ДВОЙНОГО ЗАМЕРА ТЕМПЕРАТУРЫ (повторный для извлечения параметров съемки)
                 while (shots != 0) {
                     emit holeName(QChar(65 + j).toAscii() + QString::number(i + 1));        // Послать номер текущей ячейки
@@ -155,8 +164,6 @@ bool TaskExecutor::startExperiment(Task *t)
                     shots--;                                                            // Уменьшаем счетчик снимков на единицу
                     arduino->sleep(task->shotInterval);
                 }
-                arduino->sleep(100);                                                    // Задержка на 0,1 сек для завершения съемки кадра камерой прежде чем гасить свет
-    // РЕШИТЬ ВОПРОС С ЗАДЕРЖКОЙ, ВЕРОЯТНО НУЖНА ПРОВЕРКА ФЛАГА takeshot
                 arduino->lightOff();                                                    // Отключим подстветку для выбора следующей лунки
                 if (task->pauseEnabled == true)
                 {
@@ -213,7 +220,9 @@ void TaskExecutor::changeTablet()
 
 void TaskExecutor::getShot(short x, short y, short l, short n, qint64 t)
 {
-    wait = true;                                                                        // Поставим на паузу до сохранения кадра (сбрасывается из Main)
+    while (arduino->getMoveStatus() == 1)                                               // Ждем завершения любых телодвижений  !!! Добавлено 060120г
+        arduino->sleep(20);
+
     short time = t / 1000;                                                              // Переведем от начала эксперимента время в секунды
     short tt = task->tabletColumns * task->tabletRows;
     QChar c = (char)(((int)'A') + y);
@@ -228,6 +237,8 @@ void TaskExecutor::getShot(short x, short y, short l, short n, qint64 t)
     tagInfo.append("ShotNumber," + QString().setNum(++n));                              // Передадим номер снимка в цикле
     tagInfo.append("Temperature," + arduino->getTemperature().at(EXTRUDER).toAscii());  // Передадим текущую температуру: "Temperature,37"
     tagInfo.append("TimeFromStart," + QString().setNum(time));                          // Передадим время в секундах от начала эксперимента
+
+    wait = true;                                                                        // Поставим на паузу до сохранения кадра (сбрасывается из Main)
     emit takeShot(tagInfo);
     do
     {
