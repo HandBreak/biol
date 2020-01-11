@@ -44,7 +44,6 @@ fd = -1;
     static struct v4l2_format src_fmt;
     static unsigned char *dst_buf;
 
-
 // (CLEAR(fmt) - макрос, выполняющий заполнение области памяти (буфера), на которую указывает аргумент, размером указанным в аргументе, кодом #00)
     CLEAR(fmt);
 // Создаём в очищенном буфере структуру, описывающую формат данных.  Область .type                  содержит описатель типа структуры (V4L2_BUF_TYPE_VIDEO_CAPTURE = 1)
@@ -121,11 +120,27 @@ fd = -1;
     int di=0;
     bool saveframe;
     char header[20]="P6\n";
-    strcat(header, xrstr);
+
+// Блок переменных для экспериментального блока обрезки кадра
+    __u8  pixsize     = 3;
+    __u16 wcropsize   = yres;
+    __u16 hcropsize   = yres;
+    __u16 wcropshift  = (fmt.fmt.pix.width - wcropsize) / 2;                           // Центрирование кадра
+    __u16 hcropshift  = (fmt.fmt.pix.height - hcropsize) / 2;                          // Центрирование кадра;
+    __u16 rowsize     = wcropsize * pixsize;
+    __u32 framesize   = hcropsize * rowsize;
+    __u32 skiprows    = fmt.fmt.pix.width * pixsize;
+    __u32 skipinrow   = wcropshift * pixsize;
+    strcat(header, yrstr);
+// Конец блока
+
+
+//    strcat(header, xrstr);
     strcat(header, " ");
     strcat(header, yrstr);
     strcat(header, " 255\n");
     while(capture){                                                                     // Цикл накопления выполняем до тех пор, пока capture = true (в конструкторе объявляется как false)
+        saveframe = takeshot;                                                           // Фиксируем состояние флага "сделать снимок" непосредственно перед захватом кадра
         do {
                 FD_ZERO(&fds);                                                          // Макрос FD_ZERO() передаёт ссылку на 'fds' в макрос __FD_ZERO()
                 FD_SET(fd, &fds);                                                       // Макрос FD_SET() передаёт имя файла и ссылку на 'fds' аналогичным образом  (fds - объект типа fd_set)
@@ -135,6 +150,7 @@ fd = -1;
                 tv.tv_usec = 0;                                                         // .tv_usec              временной интервал = 0 микросекундам (переменная типа __suseconds_t)
 
                 r = select(fd + 1, &fds, NULL, NULL, &tv);                              // r присваиваем int результат выполнения функции 'select', получающей на входе  1:дескриптор фала + 1, 2:Ссылку на 'fds', NULL, NULL, ссылку на структуру типа 'timeval' (описана в заголовочном файле)
+
         } while ((r == -1 && (errno = EINTR)));                                         // Ожидаем пока наша r содержит код ошибки (-1) и системный вызов (прерывание) возвращает "4"
         if (r == -1) {                                                                  // Если по завершению прерывания (EINTR) r всё равно содержит код ошибки (-1), отправляем в отладочную консоль сообщение 'select' и выходим с ошибкой (1)
                 qDebug("select");
@@ -146,51 +162,79 @@ fd = -1;
         CLEAR(buf);
         buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;                                         // .type                 в поле буфера 'тип', задаём его описатель (V4L2_BUF_TYPE_VIDEO_CAPTURE = 1)
         buf.memory = V4L2_MEMORY_MMAP;                                                  // .memory               в поле буфера 'память' задаём параметр (V4L2_MEMORY_MMAP = 1)
-        saveframe = takeshot;                                                           // Фиксируем состояние флага "сделать снимок" непосредственно перед захватом кадра     
         xioctl(fd, VIDIOC_DQBUF, &buf);                                                 // Осуществляем вызов xioctl, в котором передаём 1:Дескриптор файла, 2:типа запроса (VIDIOC_QBUF - ставим буферы в очередь), 3:ссылка на буфер структуры запроса 'buf'
 
         try{                                                                            // Пробуем...
-
-        if (v4lconvert_convert(v4lconvert_data,                                         // Если функция преобразования 'v4lconvert_convert',
+            if (v4lconvert_convert(v4lconvert_data,                                         // Если функция преобразования 'v4lconvert_convert',
                                 &src_fmt,                                               // получившая на входе указатель на буфер структуры формата источника 'src_fmt',
                                 &fmt,                                                   // буфер структуры формата 'fmt',  указатель на начало актуального буфера в массиве, число сохранённых в буфере байт,
                                 (unsigned char*)buffers[buf.index].start, buf.bytesused,
                                 dst_buf, fmt.fmt.pix.sizeimage) < 0) {                  // указатель на адрес приёмного буфера, '.fmt.pix.sizeimage' - размер изображения, возвращает код ошибки (-1), тогда
                 if (errno != EAGAIN)                                                    // если код ошибки отличается от (11 = TRY AGAIN),  выводим в отладочную консоль 'v4l_convert'
                         qDebug("v4l_convert");
-        }
+            }
 
-
-// Объявляем указатель на беззнаковый символ (байт),  который получает адрес области памяти, выделяемой функцией malloc, получающей на входе размер изображения '.fmt.pix.sizeimage' + длину текстовой строки, хранимой в массиве 'header' ( = P6\n640 480 255\n)
+/*      Универсальный цикл захвата кадра. Содержит избыточное копирование кадра
+ *
         unsigned char* frame=(unsigned char*)malloc(fmt.fmt.pix.sizeimage+qstrlen(header));
         memmove(frame+qstrlen(header), dst_buf, fmt.fmt.pix.sizeimage);                  // Перемещаем блок в область, на которую указывает 'frame' со смещением на длину текстовой строки,  хранимой в массиве 'header' ( = P6\n640 480 255\n), из буфера конвертора 'dst_buf', длиной сторки в header
         memcpy(frame,header,qstrlen(header));                                            // Копируем (без промежуточного буфера) блок в область, на которую указывает 'frame', из области на начало которой указывает 'header', длиной строки в header
-        takeshot = false;                                                                // Сбросим требование сохранения снимка сразу после того, как изображение скопировано в буфер !!! (08012020)
-        QImage qq;//=new QImage(dst_buf,640,480,QImage::Format_RGB32);                   // Создаём в динамической памяти объект 'qq' типа QImage, каким-то образом получающий на входе указатель на 'dst_buf', разрешение по X, разрешение по Y, признак RGB32 формата данных)
 
-// Собственно загрузка данных в объект производится строкой ниже (в проверке условия), с помощью Qt метода loadFromData, который принимает по ссылке данные типа uchar data (массив байт), в данном случае испольузет адрес из 'frame', длиной '.fmt.pix.sizeimage+qstrlen(header)' (размер изображения + текстового заголовка) и форматом 'PPM' (если PPM=0, пытается сам разобрать формат по заголовку внутри)
+        QImage qq;//=new QImage(dst_buf,640,480,QImage::Format_RGB32);                   // Создаём в динамической памяти объект 'qq' типа QImage, каким-то образом получающий на входе указатель на 'dst_buf', разрешение по X, разрешение по Y, признак RGB32 формата данных)
         if(qq.loadFromData(frame,fmt.fmt.pix.sizeimage+qstrlen(header),"PPM")){
-            if(videovidget->isVisible()){                                                    // Если предок (виджет видеоокна) имеет сатус "Видимый (isVisible),
-//                QImage q1(qq);                                                         // Объявляем объект 'q1' типа QImage, который инициализируем объектом 'qq'. То есть создаём его "неглубокую" копию
-//                videovidget->img=q1;                                                       // Свойству 'img' предка (видеовиджета) присваиваем содержимое 'q1' (копируем в него данный кадр)
-//                videovidget->img=qq;                                                       // Свойству 'img' предка (видеовиджета) присваиваем содержимое 'qq' (копируем в него данный кадр в полном размере)
+            if(videovidget->isVisible()){                                                // Если предок (виджет видеоокна) имеет сатус "Видимый (isVisible),
                 videovidget->img=qq.copy((fmt.fmt.pix.width - fmt.fmt.pix.height)/2,\
                                      0, fmt.fmt.pix.height, fmt.fmt.pix.height);         // Копируем в видеовиджет только центр кадра (квадрат по меньшей стороне)
-                videovidget->update();                                                       // Вызываем у предка (видеовиджета) метод 'update', который перерисовывает изображение
+
+                videovidget->update();                                                   // Вызываем у предка (видеовиджета) метод 'update', который перерисовывает изображение
               //this->msleep(50);                                                        // Ожидаем 50 миллисекунд (закомментировано)
             }
             if (saveframe)                                                               // Если есть требование сохранить снимок,
             {
                 cs=qq.copy((fmt.fmt.pix.width - fmt.fmt.pix.height)/2,\
                            0, fmt.fmt.pix.height, fmt.fmt.pix.height);
-//                takeshot = false;                                                       // Сбросим требование сохранения снимка
+
+                cs=videovidget->img;
+                takeshot = false;                                                        // Сбросим требование сохранения снимка
             }
         //qApp->processEvents();                                                         // Иначе отправляем qApp сигнал о событии (закомментировано)
         }
         if(frame)                                                                        // Если указатель 'frame' true, освобождаем память выделенную под 'frame', но сам указатель при этом не меняется, то есть указывает на тот же блок памяти, а не на NULL
             free(frame);
-//        msleep(40);                                                                   // Ограничиваем скорость захвата 25к/сек (40 мсек/кадр) ДОБАВЛЕНО 050419!
-        msleep(100);                                                                    // Ограничиваем скорость захвата 10к/сек (100 мсек/кадр) ДОБАВЛЕНО 070120!
+        if (!takeshot)
+            msleep(40);                                                                  // Ограничиваем скорость захвата 25к/сек (40 мсек/кадр) ДОБАВЛЕНО 050419!
+*
+*/
+
+//   Здесь вставляем экспериментальный блок обрезки кадра перед копированием в кадровый буфер
+            __u16 nl = 0;
+            unsigned char* cframe=(unsigned char*)malloc(framesize + qstrlen(header));
+            for (__u16 l = hcropshift; l < hcropshift + hcropsize; l++)
+            {
+                memcpy(cframe+qstrlen(header) + nl * rowsize,\
+                       dst_buf + skipinrow + l * skiprows,\
+                       rowsize);
+                nl++;
+            }
+            memcpy(cframe,header,qstrlen(header));
+//  Конец блока обрезки
+
+// Собственно загрузка данных в объект производится строкой ниже (в проверке условия), с помощью Qt метода loadFromData, который принимает по ссылке данные типа uchar data (массив байт), в данном случае испольузет адрес из 'frame', длиной '.fmt.pix.sizeimage+qstrlen(header)' (размер изображения + текстового заголовка) и форматом 'PPM' (если PPM=0, пытается сам разобрать формат по заголовку внутри)
+// Объявляем указатель на беззнаковый символ (байт),  который получает адрес области памяти, выделяемой функцией malloc, получающей на входе размер изображения '.fmt.pix.sizeimage' + длину текстовой строки, хранимой в массиве 'header' ( = P6\n640 480 255\n)
+        if(videovidget->img.loadFromData(cframe,wcropsize*hcropsize*pixsize+qstrlen(header),"PPM")){
+            if(videovidget->isVisible()){                                               // Если предок (виджет видеоокна) имеет сатус "Видимый (isVisible),
+                videovidget->update();                                                  // Вызываем у предка (видеовиджета) метод 'update', который перерисовывает изображение
+            }
+            if (saveframe)                                                              // Если есть требование сохранить снимок,
+            {
+                cs=videovidget->img;
+                takeshot = false;                                                       // Сбросим требование сохранения снимка
+            }
+        }
+        if(cframe)                                                                      // Если указатель 'frame' true, освобождаем память выделенную под 'frame', но сам указатель при этом не меняется, то есть указывает на тот же блок памяти, а не на NULL
+            free(cframe);
+        if (!takeshot)
+            msleep(250);                                                                // Ограничиваем скорость захвата 4к/сек (4 мсек/кадр) ДОБАВЛЕНО 070120!
         }catch(...){}                                                                   // Ловим все возникающие исключения
         xioctl(fd, VIDIOC_QBUF, &buf);                                                  // Осуществляем вызов xioctl, в котором передаём 1:Дескриптор файла, 2:типа запроса (VIDIOC_QBUF - ставим буферы в очередь), 3:ссылка на буфер структуры запроса 'buf'
         di++;                                                                           // Увеличивем итератор  'di'
